@@ -45,4 +45,4 @@ Include the Apache 2.0 license summary at the top of each file, along with the c
 
 ## FAQ
 
-For more information and frequently asked questions, visit our [FAQ page](https://github.com/sanctuuary/APE/issues?q=label%3Afaq+sort%3Aupdated-desc+is%3Aclosed).
+For more information and frequently asked questions, visit our [FAQ page](https://github.com/workflomics/ape/issues?q=label%3Afaq+sort%3Aupdated-desc+is%3Aclosed).

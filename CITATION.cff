@@ -34,7 +34,7 @@ authors:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.5638988
-repository-code: 'https://github.com/sanctuuary/APE/'
+repository-code: 'https://github.com/workflomics/ape/'
 url: 'https://ape-framework.readthedocs.io/en/latest/'
 abstract: >-
   APE (Automated Pipeline Explorer) is a command line tool and Java API for the automated exploration of possible computational pipelines (scientific workflows) from large collections of computational tools.

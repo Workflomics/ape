@@ -2,14 +2,14 @@
 
 # APE (Automated Pipeline Explorer)
 
-| Badges | |
-|:----:|----|
-| **Fairness** |  [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F-green)](https://fair-software.eu) [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5749/badge)](https://www.bestpractices.dev/projects/5749) |
-| **Packages and Releases** |  [![Latest release](https://img.shields.io/github/release/sanctuuary/APE.svg)](https://github.com/sanctuuary/APE/releases/latest) [![Maven Central](https://badgen.net/maven/v/maven-central/io.github.sanctuuary/APE)](https://mvnrepository.com/artifact/io.github.sanctuuary/APE) [![Static Badge](https://img.shields.io/badge/RSD-APE-ape)](https://research-software-directory.org/software/ape-automated-pipeline-explorer)
-| **Build Status** | [![Build](https://github.com/sanctuuary/APE/actions/workflows/mvnbuild.yml/badge.svg)](https://github.com/sanctuuary/APE/actions/workflows/mvnbuild.yml) [![CodeQL Analysis](https://github.com/sanctuuary/APE/actions/workflows/codeql.yml/badge.svg)](https://github.com/sanctuuary/APE/actions/workflows/codeql.yml) |
-| **Documentation** | [![Documentation Status](https://readthedocs.org/projects/ape-framework/badge/?version=latest)](https://ape-framework.readthedocs.io/en/latest/?badge=latest) |
-| **DOI** | [![DOI](https://zenodo.org/badge/227861653.svg)](https://zenodo.org/badge/latestdoi/227861653) |
-| **License** |  [![GitHub license](https://img.shields.io/github/license/sanctuuary/APE)](https://github.com/sanctuuary/APE/blob/master/LICENSE) |
+| Badges |                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|:----:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Fairness** | [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F-green)](https://fair-software.eu) [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5749/badge)](https://www.bestpractices.dev/projects/5749)                                                                                                              |
+| **Packages and Releases** | [![Latest release](https://img.shields.io/github/release/workflomics/ape.svg)](https://github.com/workflomics/ape/releases/latest) [![Maven Central](https://badgen.net/maven/v/maven-central/io.github.sanctuuary/APE)](https://mvnrepository.com/artifact/io.github.sanctuuary/APE) [![Static Badge](https://img.shields.io/badge/RSD-APE-ape)](https://research-software-directory.org/software/ape-automated-pipeline-explorer) 
+| **Build Status** | [![Build](https://github.com/workflomics/ape/actions/workflows/mvnbuild.yml/badge.svg)](https://github.com/workflomics/ape/actions/workflows/mvnbuild.yml) [![CodeQL Analysis](https://github.com/workflomics/ape/actions/workflows/codeql.yml/badge.svg)](https://github.com/workflomics/ape/actions/workflows/codeql.yml)                                                                                                         |
+| **Documentation** | [![Documentation Status](https://readthedocs.org/projects/ape-framework/badge/?version=latest)](https://ape-framework.readthedocs.io/en/latest/?badge=latest)                                                                                                                                                                                                                                                                       |
+| **DOI** | [![DOI](https://zenodo.org/badge/227861653.svg)](https://zenodo.org/badge/latestdoi/227861653)                                                                                                                                                                                                                                                                                                                                      |
+| **License** | [![GitHub license](https://img.shields.io/github/license/workflomics/ape)](https://github.com/workflomics/ape/blob/master/LICENSE)                                                                                                                                                                                                                                                                                                  |
 
 
 
@@ -28,17 +28,17 @@ For our paper at [ICCS 2020](https://www.iccs-meeting.org/iccs2020/) [[2]](#2) w
 
 ## Requirements
 
-To [run](https://github.com/sanctuuary/APE#how-to-run-ape-from-the-command-line) APE locally you need to have [Java 1.8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (or higher) installed on your system (use the command `$ java -version` to check your local version).
+To [run](https://github.com/workflomics/ape#how-to-run-ape-from-the-command-line) APE locally you need to have [Java 1.8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (or higher) installed on your system (use the command `$ java -version` to check your local version).
 
-To [build](https://github.com/sanctuuary/APE#build-ape-from-source-using-maven) APE from source, [Maven 3.3+](https://maven.apache.org/download.cgi) has to be installed as well (use the command `$ mvn -version` to check your local version).
+To [build](https://github.com/workflomics/ape#build-ape-from-source-using-maven) APE from source, [Maven 3.3+](https://maven.apache.org/download.cgi) has to be installed as well (use the command `$ mvn -version` to check your local version).
 
 
 > **_Note:_**  Building APE from source is not required to run it, as the latest stable version is available at [maven repository](https://mvnrepository.com/artifact/io.github.sanctuuary/APE/latest).
 
 ### Releases 
 
-- [Latest](https://github.com/sanctuuary/APE/releases/latest)
-- [All releases](https://github.com/sanctuuary/APE/releases)
+- [Latest](https://github.com/workflomics/ape/releases/latest)
+- [All releases](https://github.com/workflomics/ape/releases)
 
 
 ### Add APE to your Maven project
@@ -186,9 +186,9 @@ For any questions concerning APE please get in touch with Vedran Kasalica (v.kas
 
 ## Contributions
 
-We welcome all contributions (bug reports, bug fixes, feature requests, extensions, use cases, etc.) to APE. Please get in touch with Vedran Kasalica (v.kasalica[at]esciencecenter.nl.nl) to coordinate your contribution. We expect all contributors to follow our [Code of Conduct](https://github.com/sanctuuary/APE/blob/master/CODE_OF_CONDUCT.md).
+We welcome all contributions (bug reports, bug fixes, feature requests, extensions, use cases, etc.) to APE. Please get in touch with Vedran Kasalica (v.kasalica[at]esciencecenter.nl.nl) to coordinate your contribution. We expect all contributors to follow our [Code of Conduct](https://github.com/workflomics/ape/blob/master/CODE_OF_CONDUCT.md).
 
-In case you have a specific request, want to report a bug or suggest a new constraint template please make an issue [here](https://github.com/sanctuuary/APE/issues/new).
+In case you have a specific request, want to report a bug or suggest a new constraint template please make an issue [here](https://github.com/workflomics/ape/issues/new).
 
 ## Credits
 
@@ -198,7 +198,7 @@ We thank our brave first-generation users for their patience and constructive fe
 
 ## License
 
-APE is licensed under the [Apache 2.0](https://github.com/sanctuuary/APE/blob/master/LICENSE) license.
+APE is licensed under the [Apache 2.0](https://github.com/workflomics/ape/blob/master/LICENSE) license.
 
 ### Maven dependencies
 
