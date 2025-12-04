@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 	<name>io.github.sanctuuary:APE</name>
 	<description>APE is a command line tool and an API for the automated exploration of possible computational pipelines (workflows) from large collections of computational tools.</description>
-	<url>https://github.com/sanctuuary/APE</url>
+	<url>https://github.com/workflomics/ape</url>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -25,9 +25,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git://github.com/sanctuuary/APE.git</connection>
-		<developerConnection>scm:git:ssh://github.com:sanctuuary/APE.git</developerConnection>
-		<url>https://github.com/sanctuuary/APE/tree/main</url>
+		<connection>scm:git:git://github.com/workflomics/ape.git</connection>
+		<developerConnection>scm:git:ssh://github.com:workflomics/ape.git</developerConnection>
+		<url>https://github.com/workflomics/ape/tree/main</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
