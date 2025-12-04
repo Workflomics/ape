@@ -9,7 +9,7 @@ assignees: ''
 
 ## Checklist before submitting a bug report
 
-- [ ] I have checked the [existing issues](https://github.com/NLeSC/python-template/issues) and couldn't find an issue about this bug.
+- [ ] I have checked the [existing issues](https://github.com/workflomics/ape/issues) and couldn't find an issue about this bug.
 
 
 ## Description
