@@ -1,7 +1,8 @@
 package nl.uu.cs.ape.solver.solutionStructure.snakemake;
 
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils.IndentStyle;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
-import nl.uu.cs.ape.solver.solutionStructure.cwl.CWLWorkflowBase.IndentStyle;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class SnakemakeCreator {
         for (ModuleNode moduleNode : solution.getModuleNodes()) {
             snakemakeRepresentation
                     .append("rule ")
-                    .append(stepName(moduleNode))
+                    .append(SolutionCreationUtils.stepName(moduleNode))
                     .append(":\n");
             generateRuleInput(moduleNode);
             generateRuleOutput(moduleNode);
@@ -73,7 +74,7 @@ public class SnakemakeCreator {
             int outId = typeNode.getCreatedByModule().getOutputTypes().get(i - 1).getAutomatonState()
                     .getLocalStateNumber();
             snakemakeRepresentation
-                    .append(generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
+                    .append(SolutionCreationUtils.generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
                     .append("'\n");
             i++;
         }
@@ -128,7 +129,7 @@ public class SnakemakeCreator {
         List<TypeNode> outputs = moduleNode.getOutputTypes();
         IntStream.range(0, outputs.size()).filter(i -> !outputs.get(i).isEmpty())
                 .forEach(i -> {
-                    String name = generateInputOrOutputName(moduleNode, "out", i + 1);
+                    String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out", i + 1);
                     addNewParameterToMap(outputs.get(i), String.format("%s", name));
                     snakemakeRepresentation
                             .append(ind(2))
@@ -189,48 +190,13 @@ public class SnakemakeCreator {
     }
 
     /**
-     * Generate the name for a step in the workflow.
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @return The name of the workflow step.
-     */
-    protected String stepName(ModuleNode moduleNode) {
-        int stepNumber = moduleNode.getAutomatonState().getLocalStateNumber();
-        if (stepNumber < 10) {
-            return String.format("%s_0%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        } else {
-            return String.format("%s_%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        }
-    }
-
-    /**
      * Generate the indentation at the start of a line.
      * 
      * @param level The level of indentation.
      * @return The indentation of the given level.
      */
     protected String ind(int level) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            builder.append(this.indentStyle);
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Generate the name of the input or output of a step's run input or output.
-     * I.e. "moduleName_indicator_n".
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @param indicator  Indicator whether it is an input or an output.
-     * @param n          The n-th input or output this is.
-     * @return The name of the input or output.
-     */
-    protected String generateInputOrOutputName(ModuleNode moduleNode, String indicator, int n) {
-        return String.format("%s_%s_%d",
-                moduleNode.getNodeLabel(),
-                indicator,
-                n);
+        return SolutionCreationUtils.ind(level, this.indentStyle);
     }
 
 }
