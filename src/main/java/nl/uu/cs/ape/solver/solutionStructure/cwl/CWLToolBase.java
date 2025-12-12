@@ -11,6 +11,8 @@ import nl.uu.cs.ape.models.AuxTypePredicate;
 import nl.uu.cs.ape.models.Module;
 import nl.uu.cs.ape.models.Type;
 import nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils.IndentStyle;
 
 /**
  * Base class with shared behavior for CWL export classes.
@@ -173,37 +175,6 @@ public abstract class CWLToolBase {
     }
 
     /**
-     * Generate the name of the input or output of a step's run input or output.
-     * I.e. "moduleName_indicator_n".
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @param indicator  Indicator whether it is an input or an output.
-     * @param n          The n-th input or output this is.
-     * @return The name of the input or output.
-     */
-    protected String generateInputOrOutputName(ModuleNode moduleNode, String indicator, int n) {
-        return String.format("%s_%s_%d",
-                moduleNode.getNodeLabel(),
-                indicator,
-                n);
-    }
-
-    /**
-     * Generate the name for a step in the workflow.
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @return The name of the workflow step.
-     */
-    protected String stepName(ModuleNode moduleNode) {
-        int stepNumber = moduleNode.getAutomatonState().getLocalStateNumber();
-        if (stepNumber < 10) {
-            return String.format("%s_0%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        } else {
-            return String.format("%s_%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        }
-    }
-
-    /**
      * Generate the main part of the CWL representation.
      */
     protected abstract void generateCWLRepresentation();
@@ -233,31 +204,7 @@ public abstract class CWLToolBase {
      * @return The indentation of the given level.
      */
     protected String ind(int level) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            builder.append(this.indentStyle);
-        }
-        return builder.toString();
+        return SolutionCreationUtils.ind(level, this.indentStyle);
     }
 
-    /**
-     * The available indentation styles.
-     */
-    public enum IndentStyle {
-        /** Two spaces for indentation. */
-        SPACES2("  "),
-        /** Four spaces for indentation. */
-        SPACES4("    ");
-
-        private final String text;
-
-        IndentStyle(String s) {
-            this.text = s;
-        }
-
-        @Override
-        public String toString() {
-            return this.text;
-        }
-    }
 }
