@@ -26,14 +26,24 @@ public class CWLParser {
 
     /**
      * Constructor to load CWL from a URL string
+     * @param inputStream The input stream containing the CWL file content.
+     * @param uriString URI string pointing to the CWL file.
+     * @throws IOException if the file cannot be read
+     */
+    protected CWLParser(InputStream inputStream, String uriString) throws IOException {
+        String fileContent = new String(inputStream.readAllBytes());
+        inputStream.close();
+        cwlToolContent = (CommandLineTool) RootLoader.loadDocument(fileContent, uriString);
+
+    }
+
+    /**
+     * Constructor to load CWL from a URL string
      * @param urlString URL string pointing to the CWL file
      * @throws IOException if the file cannot be read
      */
     public CWLParser(String urlString) throws IOException {
-        InputStream inputStream = new FileInputStream(APEFiles.readPathToFile(urlString));
-        String fileContent = new String(inputStream.readAllBytes());
-        inputStream.close();
-        cwlToolContent = (CommandLineTool) RootLoader.loadDocument(fileContent, urlString);
+        this(new FileInputStream(APEFiles.readPathToFile(urlString)), urlString);
     }
 
     /**
@@ -43,10 +53,7 @@ public class CWLParser {
      * @throws IOException if the file cannot be read
      */
     public CWLParser(Path filePath) throws IOException {
-        InputStream inputStream = Files.newInputStream(filePath);
-        String fileContent = new String(inputStream.readAllBytes());
-        inputStream.close();
-        cwlToolContent = (CommandLineTool) RootLoader.loadDocument(fileContent, filePath.toString());
+        this(Files.newInputStream(filePath), filePath.toString());
     }
 
     /**
