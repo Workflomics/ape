@@ -2,6 +2,7 @@ package nl.uu.cs.ape.solver.solutionStructure.cwl;
 
 import nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate;
 import nl.uu.cs.ape.solver.solutionStructure.ModuleNode;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.TypeNode;
 
@@ -93,14 +94,14 @@ public class AbstractCWLCreator extends CWLWorkflowBase {
                     // outputSource
                     .append(ind(2))
                     .append("outputSource: ")
-                    .append(stepName(typeNode.getCreatedByModule()))
+                    .append(SolutionCreationUtils.stepName(typeNode.getCreatedByModule()))
                     .append("/");
             // Get the id of the step run's output bound to this workflow output
             // (step_name/output_name_ID)
             int outId = typeNode.getCreatedByModule().getOutputTypes().get(i - 1).getAutomatonState()
                     .getLocalStateNumber();
             cwlRepresentation
-                    .append(generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
+                    .append(SolutionCreationUtils.generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
                     .append("\n");
             i++;
         }
@@ -126,7 +127,7 @@ public class AbstractCWLCreator extends CWLWorkflowBase {
         // Name
         cwlRepresentation
                 .append(ind(baseInd))
-                .append(stepName(moduleNode))
+                .append(SolutionCreationUtils.stepName(moduleNode))
                 .append(":\n");
         generateStepIn(moduleNode);
         generateStepOut(moduleNode);
@@ -157,7 +158,7 @@ public class AbstractCWLCreator extends CWLWorkflowBase {
         for (TypeNode typeNode : moduleNode.getInputTypes()) {
             cwlRepresentation
                     .append(ind(baseInd + 1))
-                    .append(generateInputOrOutputName(moduleNode, "in", i + 1))
+                    .append(SolutionCreationUtils.generateInputOrOutputName(moduleNode, "in", i + 1))
                     .append(": ")
                     .append(workflowParameters.get(typeNode.getNodeID()))
                     .append("\n");
@@ -180,8 +181,8 @@ public class AbstractCWLCreator extends CWLWorkflowBase {
                 .append("[");
         int i = 1;
         for (TypeNode typeNode : moduleNode.getOutputTypes()) {
-            String name = generateInputOrOutputName(moduleNode, "out", i);
-            addParameter(typeNode, String.format("%s/%s", stepName(moduleNode), name));
+            String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out", i);
+            addParameter(typeNode, String.format("%s/%s", SolutionCreationUtils.stepName(moduleNode), name));
             cwlRepresentation
                     .append(name)
                     .append(", ");
@@ -310,7 +311,7 @@ public class AbstractCWLCreator extends CWLWorkflowBase {
             cwlRepresentation
                     // Name
                     .append(ind(baseInd))
-                    .append(generateInputOrOutputName(moduleNode, input ? "in" : "out", i))
+                    .append(SolutionCreationUtils.generateInputOrOutputName(moduleNode, input ? "in" : "out", i))
                     .append(":\n")
                     // Data type
                     .append(ind(baseInd + 1))
