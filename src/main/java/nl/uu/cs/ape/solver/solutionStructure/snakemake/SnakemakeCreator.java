@@ -46,10 +46,7 @@ public class SnakemakeCreator {
         addWorkflowInputs();
         generateRuleAll();
         for (ModuleNode moduleNode : solution.getModuleNodes()) {
-            snakemakeRepresentation
-                    .append("rule ")
-                    .append(SolutionCreationUtils.stepName(moduleNode))
-                    .append(":\n");
+            snakemakeRepresentation.append(String.format("rule %s:\n'", SolutionCreationUtils.stepName(moduleNode)));
             generateRuleInput(moduleNode);
             generateRuleOutput(moduleNode);
             generateRuleShell(moduleNode);
