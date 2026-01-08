@@ -169,9 +169,6 @@ public class SnakemakeCreator {
         return typeNode.getNodeID();
     }
 
-    public void deleteLastNCharactersFromSnakefile(int numberOfCharToDel) {
-        snakemakeRepresentation.delete(snakemakeRepresentation.length() - numberOfCharToDel, snakemakeRepresentation.length());
-    }
 
     /**
      * Adds the comment at the top of the file.
