@@ -4,6 +4,7 @@ import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils.IndentStyle;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -101,19 +102,19 @@ public class SnakemakeCreator {
         snakemakeRepresentation
                 .append(ind(1))
                 .append("input:\n");
-        if (moduleNode.hasInputTypes()){
-            List<TypeNode> inputs = moduleNode.getInputTypes();
-            IntStream.range(0, inputs.size()).filter(i -> !inputs.get(i).isEmpty())
-                    .forEach(i -> snakemakeRepresentation
-                            .append(ind(2))
-                            .append(String.format("'add-path/%s'", workflowParameters.get(inputs.get(i).getNodeID())))
-                            .append(",\n"));
-            if (moduleNode.hasOutputTypes()) {
-            // Remove the last comma
-            deleteLastNCharactersFromSnakefile(2);
+
+        List<String> valid_inputs = new ArrayList<>();
+        // Create a path representation for each valid, i.e. non-empty, input type
+        for (TypeNode node : moduleNode.getInputTypes())
+        {
+            if (!node.isEmpty())
+            {
+                valid_inputs.add(String.format("%s'add-path/%s'", ind(2), workflowParameters.get(node.getNodeID())));
             }
-            snakemakeRepresentation.append("\n");
         }
+
+        // Join all valid input representations with a colon followed by a newline
+        snakemakeRepresentation.append(String.join(",\n", valid_inputs)).append("\n");
     }
 
     /**
@@ -125,22 +126,25 @@ public class SnakemakeCreator {
         snakemakeRepresentation
                 .append(ind(1))
                 .append("output:\n");
-        
-        List<TypeNode> outputs = moduleNode.getOutputTypes();
-        IntStream.range(0, outputs.size()).filter(i -> !outputs.get(i).isEmpty())
-                .forEach(i -> {
-                    String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out", i + 1);
-                    addNewParameterToMap(outputs.get(i), String.format("%s", name));
-                    snakemakeRepresentation
-                            .append(ind(2))
-                            .append(String.format("'add-path/%s'", name))
-                            .append(",\n");
-                });
-        if (moduleNode.hasOutputTypes()) {
-            // Remove the last comma
-            deleteLastNCharactersFromSnakefile(2);
+
+        List<String> valid_output = new ArrayList<>();
+        int valid_output_id = 0;
+        // Create a path representation for each valid, i.e. non-empty, output type
+        for (TypeNode node : moduleNode.getOutputTypes())
+        {
+            if (!node.isEmpty())
+            {
+                // Increment the output id and generate the output name
+                valid_output_id += 1;
+                String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out",  valid_output_id);
+                addNewParameterToMap(node, String.format("%s", name));
+
+                valid_output.add(String.format("%s'add-path/%s'", ind(2), name));
+            }
         }
-        snakemakeRepresentation.append("\n");
+
+        // Join all valid output representations with a colon followed by a newline
+        snakemakeRepresentation.append(String.join(",\n", valid_output)).append("\n");
     }
 
     /**
