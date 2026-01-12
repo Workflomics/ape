@@ -100,18 +100,18 @@ public class SnakemakeCreator {
                 .append(ind(1))
                 .append("input:\n");
 
-        List<String> valid_inputs = new ArrayList<>();
+        List<String> validInputs = new ArrayList<>();
         // Create a path representation for each valid, i.e. non-empty, input type
         for (TypeNode node : moduleNode.getInputTypes())
         {
             if (!node.isEmpty())
             {
-                valid_inputs.add(String.format("%s'add-path/%s'", ind(2), workflowParameters.get(node.getNodeID())));
+                validInputs.add(String.format("%s'add-path/%s'", ind(2), workflowParameters.get(node.getNodeID())));
             }
         }
 
         // Join all valid input representations with a colon followed by a newline
-        snakemakeRepresentation.append(String.join(",\n", valid_inputs)).append("\n");
+        snakemakeRepresentation.append(String.join(",\n", validInputs)).append("\n");
     }
 
     /**
@@ -124,24 +124,24 @@ public class SnakemakeCreator {
                 .append(ind(1))
                 .append("output:\n");
 
-        List<String> valid_output = new ArrayList<>();
-        int valid_output_id = 0;
+        List<String> validOutput = new ArrayList<>();
+        int validOutputId = 0;
         // Create a path representation for each valid, i.e. non-empty, output type
         for (TypeNode node : moduleNode.getOutputTypes())
         {
             if (!node.isEmpty())
             {
                 // Increment the output id and generate the output name
-                valid_output_id += 1;
-                String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out",  valid_output_id);
+                validOutputId += 1;
+                String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out",  validOutputId);
                 addNewParameterToMap(node, String.format("%s", name));
 
-                valid_output.add(String.format("%s'add-path/%s'", ind(2), name));
+                validOutput.add(String.format("%s'add-path/%s'", ind(2), name));
             }
         }
 
         // Join all valid output representations with a colon followed by a newline
-        snakemakeRepresentation.append(String.join(",\n", valid_output)).append("\n");
+        snakemakeRepresentation.append(String.join(",\n", validOutput)).append("\n");
     }
 
     /**
