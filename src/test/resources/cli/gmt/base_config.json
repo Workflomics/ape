@@ -2,6 +2,7 @@
   "ontologyPrefixIRI": "http://www.co-ode.org/ontologies/ont.owl#",
   "toolsTaxonomyRoot": "ToolsTaxonomy",
   "dataDimensionsTaxonomyRoots": ["TypesTaxonomy"],
+  "create_partial_scripts": "true",
   "solution_length": { "min": 1, "max": 8 },
   "solutions": "100",
   "number_of_execution_scripts": "3",
