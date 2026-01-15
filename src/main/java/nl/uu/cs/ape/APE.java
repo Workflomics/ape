@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.SortedSet;
+import java.util.*;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +27,7 @@ import nl.uu.cs.ape.models.enums.SynthesisFlag;
 import nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate;
 import nl.uu.cs.ape.solver.SynthesisEngine;
 import nl.uu.cs.ape.solver.minisat.SATSynthesisEngine;
+import nl.uu.cs.ape.solver.solutionStructure.ModuleNode;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionsList;
 import nl.uu.cs.ape.solver.solutionStructure.cwl.DefaultCWLCreator;
@@ -413,9 +413,24 @@ public class APE implements APEInterface {
 		/* Creating the requested scripts in parallel. */
 		allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noExecutions).forEach(solution -> {
 			try {
-				File script = executionsFolder.resolve(solution.getFileName() + ".sh").toFile();
-				APEFiles.write2file(solution.getScriptExecution(), script, false);
+                File script = executionsFolder.resolve(solution.getFileName() + ".sh").toFile();
+                if (allSolutions.getRunConfiguration().getCreatePartialScripts()) {
+                    APEFiles.write2file(solution.getScriptExecution(), script, false);
+                } else {
+                    List<String> emptyOperations = new ArrayList<>();
+                    for (ModuleNode operation : solution.getModuleNodes()){
+                        String code = operation.getUsedModule().getExecutionCommand();
+                        if (code == null || code.equals("")) {
+                            emptyOperations.add(String.format("'%s'", operation.getNodeLabel()));
+                        }
+                    }
 
+                    if (emptyOperations.isEmpty()) {
+                        APEFiles.write2file(solution.getScriptExecution(), script, false);
+                    } else {
+                        log.error("Cannot create {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                    }
+                }
 			} catch (IOException e) {
 				log.error("Error occurred while writing an executable (workflow) script to the file system.");
 				e.printStackTrace();
