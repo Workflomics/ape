@@ -19,7 +19,7 @@ import nl.uu.cs.ape.solver.minisat.SATSynthesisEngine;
  * <p>
  * Labeling of the automaton is provided in
  * <a href=
- * "https://github.com/sanctuuary/APE/blob/master/res/WorkflowAutomaton_Implementation.png">/APE/res/WorkflowAutomaton_Implementation.png</a>.
+ * "https://ape-framework.readthedocs.io/en/latest/docs/developers/developers.html">the ReadTheDocs</a>.
  *
  * @author Vedran Kasalica
  */

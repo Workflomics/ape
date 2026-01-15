@@ -17,7 +17,7 @@ import nl.uu.cs.ape.models.enums.AtomType;
  * <p>
  * Labeling of the automaton is provided in
  * <a href=
- * "https://github.com/sanctuuary/APE/blob/master/res/WorkflowAutomaton_Implementation.png">/APE/res/WorkflowAutomaton_Implementation.png</a>.
+ * "https://ape-framework.readthedocs.io/en/latest/docs/developers/developers.html">the ReadTheDocs</a>.
  *
  * @author Vedran Kasalica
  */
@@ -45,7 +45,7 @@ public class TypeAutomaton implements Automaton {
      * factor.<br>
      * Labeling of the automaton is provided in
      * <a href=
-     * "https://github.com/sanctuuary/APE/blob/master/res/WorkflowAutomaton_Implementation.png">/APE/res/WorkflowAutomaton_Implementation.png</a>
+     * "https://ape-framework.readthedocs.io/en/latest/docs/developers/developers.html">the ReadTheDocs</a>.
      *
      * @param automataBound   Length of the automaton
      * @param inputBranching  Input branching factor (max number of inputs for
