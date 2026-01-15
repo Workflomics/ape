@@ -22,6 +22,16 @@ public class SolutionCreationUtils {
         return String.format("%s_%02d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
     }
 
+    /**
+     * Get the name of the workflow.
+     *
+     * @param solution The solution workflow.
+     * @return The name of the workflow.
+     */
+    public static String getWorkflowName(SolutionWorkflow solution) {
+        return String.format("WorkflowNo_%02d", solution.getIndex()+1);
+    }
+
 
     /**
      * Generate the name of the input or output of a step's run input or output.
