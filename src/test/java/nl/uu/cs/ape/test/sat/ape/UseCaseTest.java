@@ -3,7 +3,7 @@ package nl.uu.cs.ape.test.sat.ape;
 import nl.uu.cs.ape.APE;
 import nl.uu.cs.ape.configuration.APEConfigException;
 import nl.uu.cs.ape.sat.test.utils.GitHubRepo;
-import nl.uu.cs.ape.sat.test.utils.TestResources;
+import nl.uu.cs.ape.utils.APEResources;
 import nl.uu.cs.ape.utils.APEUtils;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionsList;
 
@@ -173,7 +173,11 @@ class UseCaseTest {
 
         public UseCase(String useCasePath, GitHubRepo repo) {
 
-            JSONObject useCase = TestResources.getJSONResource(useCasePath);
+            JSONObject useCase = APEResources.getJSONResource(useCasePath);
+            if (useCase.isEmpty())
+            {
+                fail("Could not retrieve resource '%s' ", useCasePath);
+            }
 
             // read name
             this.name = useCase.getString("name");

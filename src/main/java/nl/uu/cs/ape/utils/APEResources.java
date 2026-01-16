@@ -1,11 +1,9 @@
-package nl.uu.cs.ape.sat.test.utils;
+package nl.uu.cs.ape.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static nl.uu.cs.ape.sat.test.utils.Evaluation.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +16,14 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
- * The {@code TestUtil} class is used to read contents of resource files more
+ * The {@code APEResources} class is used to read contents of resource files more
  * easily, as functional tests will make use of json files in the test resource
  * folders.
  *
  * @author Maurin Voshol
  */
 @Slf4j
-public class TestResources {
+public class APEResources {
 
     /**
      * @param resource: relative path of a resource in the test resource folder
@@ -33,11 +31,11 @@ public class TestResources {
      */
     public static String getAbsoluteResourcePath(String resource) {
         try {
-            return Paths.get(Objects.requireNonNull(TestResources.class.getClassLoader().getResource(resource)).toURI())
+            return Paths.get(Objects.requireNonNull(APEResources.class.getClassLoader().getResource(resource)).toURI())
                     .toAbsolutePath().toString();
         } catch (URISyntaxException | NullPointerException e) {
             e.printStackTrace();
-            fail("Could not retrieve resource '%s'", resource);
+            log.error("Could not retrieve resource '{}'", resource);
             return null;
         }
     }
@@ -58,11 +56,11 @@ public class TestResources {
     public static String getTextResource(String resource, Charset charset) {
         try {
             return IOUtils.toString(
-                    Objects.requireNonNull(TestResources.class.getClassLoader().getResourceAsStream(resource)),
+                    Objects.requireNonNull(APEResources.class.getClassLoader().getResourceAsStream(resource)),
                     charset);
         } catch (IOException e) {
             e.printStackTrace();
-            fail("Could not retrieve %s resource '%s' ", charset, resource);
+            log.error("Could not retrieve {} resource '{}' ", charset, resource);
             return null;
         }
     }
@@ -84,7 +82,7 @@ public class TestResources {
     }
 
     public static String writeFile(String relativePath, String content) {
-        Path absolutePath = Paths.get(TestResources.getAbsoluteRoot()).resolve(relativePath).toAbsolutePath();
+        Path absolutePath = Paths.get(APEResources.getAbsoluteRoot()).resolve(relativePath).toAbsolutePath();
         Path absoluteParentPath = absolutePath.getParent();
         try {
             File folder = absoluteParentPath.toFile();
@@ -106,7 +104,7 @@ public class TestResources {
     }
 
     public static JSONObject getConfigResource(String base_config_path, String ontology_path, String tools_path,
-            String constraints_path, String solution_dir_path) {
+                                               String constraints_path, String solution_dir_path) {
         return getJSONResource(base_config_path)
                 // add paths to the other files to the configuration
                 .put("ontology_path", getAbsoluteResourcePath(ontology_path))
