@@ -6,7 +6,7 @@ import nl.uu.cs.ape.configuration.APERunConfig;
 import nl.uu.cs.ape.configuration.tags.APEConfigTag;
 import nl.uu.cs.ape.configuration.tags.validation.ValidationResults;
 import nl.uu.cs.ape.domain.APEDomainSetup;
-import nl.uu.cs.ape.sat.test.utils.TestResources;
+import nl.uu.cs.ape.utils.APEResources;
 import nl.uu.cs.ape.utils.APEUtils;
 
 import org.json.JSONObject;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nl.uu.cs.ape.sat.test.utils.Evaluation.fail;
 import static nl.uu.cs.ape.sat.test.utils.Evaluation.success;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,12 +51,17 @@ public class APEConfigTagTest {
 
     @Test
     public void coreValidationTest() {
-        final JSONObject correct_config = TestResources.getJSONResource("cli/gmt/base_config.json")
-                // add paths to the other files to the configuration
-                .put("ontology_path", TestResources.getAbsoluteResourcePath("cli/gmt/GMT_UseCase_taxonomy.owl"))
-                .put("tool_annotations_path", TestResources.getAbsoluteResourcePath("cli/gmt/tool_annotations.json"))
-                .put("constraints_path", TestResources.getAbsoluteResourcePath("cli/gmt/constraints_e0.json"))
-                .put("solutions_dir_path", TestResources.getAbsoluteResourcePath("cli/gmt"));
+        final JSONObject correct_config = APEResources.getJSONResource("cli/gmt/base_config.json");
+        if (correct_config.isEmpty())
+        {
+            fail("Could not retrieve resource '%s' ", "cli/gmt/base_config.json");
+        } else {
+            // add paths to the other files to the configuration
+            correct_config.put("ontology_path", APEResources.getAbsoluteResourcePath("cli/gmt/GMT_UseCase_taxonomy.owl"))
+                    .put("tool_annotations_path", APEResources.getAbsoluteResourcePath("cli/gmt/tool_annotations.json"))
+                    .put("constraints_path", APEResources.getAbsoluteResourcePath("cli/gmt/constraints_e0.json"))
+                    .put("solutions_dir_path", APEResources.getAbsoluteResourcePath("cli/gmt"));
+        }
 
         ValidationResults results = APECoreConfig.validate(correct_config);
 
@@ -107,12 +113,17 @@ public class APEConfigTagTest {
 
     @Test
     public void runValidationTest() throws IOException, OWLOntologyCreationException {
-        final JSONObject correct_config = TestResources.getJSONResource("cli/gmt/base_config.json")
-                // add paths to the other files to the configuration
-                .put("ontology_path", TestResources.getAbsoluteResourcePath("cli/gmt/GMT_UseCase_taxonomy.owl"))
-                .put("tool_annotations_path", TestResources.getAbsoluteResourcePath("cli/gmt/tool_annotations.json"))
-                .put("constraints_path", TestResources.getAbsoluteResourcePath("cli/gmt/constraints_e0.json"))
-                .put("solutions_dir_path", TestResources.getAbsoluteResourcePath("cli/gmt"));
+        final JSONObject correct_config = APEResources.getJSONResource("cli/gmt/base_config.json");
+        if (correct_config.isEmpty())
+        {
+            fail("Could not retrieve resource '%s' ", "cli/gmt/base_config.json");
+        } else {
+            // add paths to the other files to the configuration
+            correct_config.put("ontology_path", APEResources.getAbsoluteResourcePath("cli/gmt/GMT_UseCase_taxonomy.owl"))
+                    .put("tool_annotations_path", APEResources.getAbsoluteResourcePath("cli/gmt/tool_annotations.json"))
+                    .put("constraints_path", APEResources.getAbsoluteResourcePath("cli/gmt/constraints_e0.json"))
+                    .put("solutions_dir_path", APEResources.getAbsoluteResourcePath("cli/gmt"));
+        }
 
         APEDomainSetup domainSetup = new APE(correct_config).getDomainSetup();
 

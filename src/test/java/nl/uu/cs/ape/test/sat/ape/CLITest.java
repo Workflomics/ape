@@ -2,7 +2,7 @@ package nl.uu.cs.ape.test.sat.ape;
 
 import nl.uu.cs.ape.Main;
 import nl.uu.cs.ape.configuration.APERunConfig;
-import nl.uu.cs.ape.sat.test.utils.TestResources;
+import nl.uu.cs.ape.utils.APEResources;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -50,7 +50,7 @@ class CLITest {
 
         // absolute solution_dir_path
         final Path solution_path = Paths
-                .get(Objects.requireNonNull(TestResources.getAbsoluteResourcePath(solution_dir_path)));
+                .get(Objects.requireNonNull(APEResources.getAbsoluteResourcePath(solution_dir_path)));
 
         // absolute Figures and Executables directories
         final Path figures_path = solution_path.resolve(APERunConfig.FIGURES_FOLDER_NAME);
@@ -68,7 +68,7 @@ class CLITest {
         }
 
         // get the base configuration file
-        final JSONObject config_content = TestResources.getConfigResource(
+        final JSONObject config_content = APEResources.getConfigResource(
                 base_config_path,
                 ontology_path,
                 tools_path,
@@ -76,8 +76,8 @@ class CLITest {
                 solution_dir_path);
 
         // create a new configuration file
-        final String config_path = TestResources
-                .writeFile(Paths.get(Objects.requireNonNull(TestResources.getAbsoluteResourcePath(solution_dir_path)))
+        final String config_path = APEResources
+                .writeFile(Paths.get(Objects.requireNonNull(APEResources.getAbsoluteResourcePath(solution_dir_path)))
                         .resolve("config.json").toAbsolutePath().toString(), config_content.toString(2));
 
         Main.main(new String[] {
@@ -87,14 +87,14 @@ class CLITest {
         // check whether images are produced correctly
         assertTrue(Files.exists(figures_path));
         final int figures_amount_generated = Objects.requireNonNull(
-                Paths.get(Objects.requireNonNull(TestResources.getAbsoluteResourcePath(solution_dir_path)))
+                Paths.get(Objects.requireNonNull(APEResources.getAbsoluteResourcePath(solution_dir_path)))
                         .resolve(APERunConfig.FIGURES_FOLDER_NAME).toFile().list()).length;
         assertEquals(config_content.getInt("number_of_generated_graphs"), figures_amount_generated);
 
         // check whether scripts are produced correctly
         assertTrue(Files.exists(executables_path));
         final int executables_amount_generated = Objects.requireNonNull(
-                Paths.get(Objects.requireNonNull(TestResources.getAbsoluteResourcePath(solution_dir_path)))
+                Paths.get(Objects.requireNonNull(APEResources.getAbsoluteResourcePath(solution_dir_path)))
                         .resolve(APERunConfig.EXECUTABLES_FOLDER_NAME).toFile().list()).length;
         assertEquals(config_content.getInt("number_of_execution_scripts"), executables_amount_generated);
     }

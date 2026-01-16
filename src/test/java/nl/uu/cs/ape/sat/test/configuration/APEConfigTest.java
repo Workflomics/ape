@@ -8,7 +8,7 @@ import nl.uu.cs.ape.configuration.tags.APEConfigTag;
 import nl.uu.cs.ape.models.Range;
 import nl.uu.cs.ape.models.enums.ConfigEnum;
 import nl.uu.cs.ape.sat.test.utils.Evaluation;
-import nl.uu.cs.ape.sat.test.utils.TestResources;
+import nl.uu.cs.ape.utils.APEResources;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,13 +33,13 @@ class APEConfigTest {
      * A correct template construct that is converted to a String at initialisation.
      */
     private static final String jsonTemplate = new JSONObject()
-            .put("ontology_path", TestResources.getAbsoluteResourcePath("template/ontology.owl"))
+            .put("ontology_path", APEResources.getAbsoluteResourcePath("template/ontology.owl"))
             .put("ontologyPrefixIRI", "http://www.co-ode.org/ontologies/ont.owl#")
             .put("toolsTaxonomyRoot", "ToolsTaxonomy")
             .put("dataDimensionsTaxonomyRoots", new String[] { "TypesTaxonomy" })
-            .put("tool_annotations_path", TestResources.getAbsoluteResourcePath("template/tool_annotations.json"))
-            .put("constraints_path", TestResources.getAbsoluteResourcePath("template/constraints.json"))
-            .put("solutions_dir_path", TestResources.getAbsoluteResourcePath("template"))
+            .put("tool_annotations_path", APEResources.getAbsoluteResourcePath("template/tool_annotations.json"))
+            .put("constraints_path", APEResources.getAbsoluteResourcePath("template/constraints.json"))
+            .put("solutions_dir_path", APEResources.getAbsoluteResourcePath("template"))
             .put("tool_seq_repeat", false)
             .put("solution_length", new JSONObject().put(Range.MIN_TAG, 1).put(Range.MAX_TAG, 5))
             .put("solutions", 5)
@@ -169,7 +169,7 @@ class APEConfigTest {
         final String[] pathTags = new String[] { "ontology_path", "tool_annotations_path" };
         final String[] wrongPaths = new String[] { null, "", "./does/not/exist.json", "does/not/exist.json",
                 "./does/not/exist/", "does/not/exist/",
-                TestResources.getAbsoluteResourcePath("") + "\\doesnotexist.json" };
+                APEResources.getAbsoluteResourcePath("") + "\\doesnotexist.json" };
 
         for (String tag : pathTags) {
             for (String path : wrongPaths) {
@@ -197,7 +197,7 @@ class APEConfigTest {
 
         final String[] pathTags = new String[] { "solutions_dir_path" };
         final String[] wrongPaths = new String[] { "file.json",
-                TestResources.getAbsoluteResourcePath("") + "\\file.json" };
+                APEResources.getAbsoluteResourcePath("") + "\\file.json" };
 
         for (String tag : pathTags) {
             for (String path : wrongPaths) {
