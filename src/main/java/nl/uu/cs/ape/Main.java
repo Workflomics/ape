@@ -232,13 +232,14 @@ public class Main {
             log.info("The problem is UNSAT.");
         } else {
             try {
+                boolean createPartialImplementations = solutions.getRunConfiguration().getCreatePartialScripts();
                 APE.writeSolutionToFile(solutions);
                 // The following method can be changed to write the solutions in different
                 // formats (e.g., control flow graph, data flow graph)
                 APE.writeTavernaDesignGraphs(solutions);
-                APE.writeExecutableWorkflows(solutions);
-                APE.writeCWLWorkflows(solutions);
-                APE.writeSnakemakeWorkflows(solutions);
+                APE.writeExecutableWorkflows(solutions, createPartialImplementations);
+                APE.writeCWLWorkflows(solutions, createPartialImplementations);
+                APE.writeSnakemakeWorkflows(solutions, createPartialImplementations);
             } catch (IOException e) {
                 log.error("Error in writing the solutions. to the file system.");
                 e.printStackTrace();

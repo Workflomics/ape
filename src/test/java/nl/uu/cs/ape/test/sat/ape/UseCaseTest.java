@@ -141,7 +141,7 @@ class UseCaseTest {
 
             // Test the generation of CWL files if they should be generated
             if (mutation.number_of_cwl_files != 0) {
-                boolean writingSuccess = APE.writeCWLWorkflows(solutions);
+                boolean writingSuccess = APE.writeCWLWorkflows(solutions, solutions.getRunConfiguration().getCreatePartialScripts());
                 assertTrue(writingSuccess);
 
                 String cwl_path = config.get("solutions_dir_path").toString();

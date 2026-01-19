@@ -847,7 +847,7 @@ public class APEConfigTagFactory {
 
             @Override
             public APEConfigDefaultValue<Boolean> getDefault() {
-                return APEConfigDefaultValue.withDefault(false);
+                return APEConfigDefaultValue.withDefault(true);
             }
         }
 

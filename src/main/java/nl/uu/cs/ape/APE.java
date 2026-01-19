@@ -390,9 +390,10 @@ public class APE implements APEInterface {
 	 * solutions and executing them.
 	 *
 	 * @param allSolutions Set of {@link SolutionWorkflow}.
+     * @param createPartialImplementations Sets whether implementations with missing code shall be created.
 	 * @return true if the execution was successfully performed, false otherwise.
 	 */
-	public static boolean writeExecutableWorkflows(SolutionsList allSolutions) {
+	public static boolean writeExecutableWorkflows(SolutionsList allSolutions, boolean createPartialImplementations) {
 		Path executionsFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Executables();
 		Integer noExecutions = allSolutions.getRunConfiguration().getNoExecutions();
 		if (executionsFolder == null || noExecutions == null || noExecutions == 0 || allSolutions.isEmpty()) {
@@ -414,7 +415,7 @@ public class APE implements APEInterface {
 		allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noExecutions).forEach(solution -> {
 			try {
                 File script = executionsFolder.resolve(solution.getFileName() + ".sh").toFile();
-                if (allSolutions.getRunConfiguration().getCreatePartialScripts()) {
+                if (createPartialImplementations) {
                     APEFiles.write2file(solution.getScriptExecution(), script, false);
                 } else {
                     List<String> emptyOperations = new ArrayList<>();
@@ -625,9 +626,10 @@ public class APE implements APEInterface {
 	 * 
 	 * @param allSolutions Set of {@link SolutionWorkflow} which should be
 	 *                     represented in CWL.
+     * @param createPartialImplementations Sets whether implementations with missing code shall be created.
 	 * @return true if the execution was successfully performed, false otherwise.
 	 */
-	public static boolean writeCWLWorkflows(SolutionsList allSolutions) {
+	public static boolean writeCWLWorkflows(SolutionsList allSolutions, boolean createPartialImplementations) {
 
 		if (allSolutions.isEmpty()) {
 			return false;
@@ -658,8 +660,26 @@ public class APE implements APEInterface {
 				// Write the cwl file to the file system
 				String titleCWL = solution.getFileName() + ".cwl";
 				File script = cwlFolder.resolve(titleCWL).toFile();
-				DefaultCWLCreator cwlCreator = new DefaultCWLCreator(solution);
-				APEFiles.write2file(cwlCreator.generate(), script, false);
+
+                if (createPartialImplementations) {
+                    DefaultCWLCreator cwlCreator = new DefaultCWLCreator(solution);
+                    APEFiles.write2file(cwlCreator.generate(), script, false);
+                } else {
+                    List<String> emptyOperations = new ArrayList<>();
+                    for (ModuleNode operation : solution.getModuleNodes()){
+                        String instruction = operation.getUsedModule().getCwlFileReference();
+                        if (instruction == null) {
+                            emptyOperations.add(String.format("'%s'", operation.getNodeLabel()));
+                        }
+                    }
+
+                    if (emptyOperations.isEmpty()) {
+                        DefaultCWLCreator cwlCreator = new DefaultCWLCreator(solution);
+                        APEFiles.write2file(cwlCreator.generate(), script, false);
+                    } else {
+                        log.error("Cannot create CWL file {} due to missing CWL reference for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                    }
+                }
 
 			} catch (IOException e) {
 				log.error("Error occurred while writing a CWL file to the file system.");
@@ -682,7 +702,16 @@ public class APE implements APEInterface {
 		return true;
 	}
 
-	public static boolean writeSnakemakeWorkflows(SolutionsList allSolutions) {
+    /**
+     * Generate Snakemake scripts that represent executable versions of the workflows
+     * solutions.
+     *
+     * @param allSolutions Set of {@link SolutionWorkflow} which should be
+     *                     represented in Snakemake.
+     * @param createPartialImplementations Sets whether implementations with missing code shall be created.
+     * @return true if the execution was successfully performed, false otherwise.
+     */
+	public static boolean writeSnakemakeWorkflows(SolutionsList allSolutions, boolean createPartialImplementations) {
         if (allSolutions.isEmpty()) {
             return false;
         }
@@ -708,11 +737,28 @@ public class APE implements APEInterface {
 
         allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noSnakemakeFiles).forEach(solution -> {
             try {
-				String titleSnakefile= solution.getFileName() + "_snakefile";
-				File script = snakemakeFolder.resolve(titleSnakefile).toFile();
-				SnakemakeCreator snakemakeCreator = new SnakemakeCreator(solution);
-				APEFiles.write2file(snakemakeCreator.generateSnakemakeRepresentation(), script, false);
+                String titleSnakefile = solution.getFileName() + "_snakefile";
+                File script = snakemakeFolder.resolve(titleSnakefile).toFile();
 
+                if (createPartialImplementations) {
+                    SnakemakeCreator snakemakeCreator = new SnakemakeCreator(solution);
+                    APEFiles.write2file(snakemakeCreator.generateSnakemakeRepresentation(), script, false);
+                } else {
+                    List<String> emptyOperations = new ArrayList<>();
+                    for (ModuleNode operation : solution.getModuleNodes()){
+                        String code = operation.getUsedModule().getExecutionCommand();
+                        if (code == null || code.equals("")) {
+                            emptyOperations.add(String.format("'%s'", operation.getNodeLabel()));
+                        }
+                    }
+
+                    if (emptyOperations.isEmpty()) {
+                        SnakemakeCreator snakemakeCreator = new SnakemakeCreator(solution);
+                        APEFiles.write2file(snakemakeCreator.generateSnakemakeRepresentation(), script, false);
+                    } else {
+                        log.error("Cannot create Snakemake file {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                    }
+                }
             } catch (IOException e) {
                 log.error("Error occurred while writing a Snakemake file to the file system.");
                 e.printStackTrace();
