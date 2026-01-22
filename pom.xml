@@ -29,6 +29,12 @@
             <organization>University of Potsdam</organization>
             <organizationUrl>https://www.uni-potsdam.de</organizationUrl>
         </developer>
+        <developer>
+            <name>Charlotte Grunert</name>
+            <email>charlotte.grunert@uni-potsdam.de</email>
+            <organization>University of Potsdam</organization>
+            <organizationUrl>https://www.uni-potsdam.de</organizationUrl>
+        </developer>
 	</developers>
 	<scm>
 		<connection>scm:git:git://github.com/workflomics/ape.git</connection>
