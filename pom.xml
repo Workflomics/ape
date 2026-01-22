@@ -2,11 +2,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.github.sanctuuary</groupId>
+	<groupId>org.workflomics</groupId>
 	<artifactId>APE</artifactId>
-	<version>2.5.3</version>
+	<version>2.6.0</version>
 	<packaging>jar</packaging>
-	<name>io.github.sanctuuary:APE</name>
+	<name>org.workflomics:APE</name>
 	<description>APE is a command line tool and an API for the automated exploration of possible computational pipelines (workflows) from large collections of computational tools.</description>
 	<url>https://github.com/workflomics/ape</url>
 	<licenses>
@@ -23,6 +23,12 @@
 			<organization>Netherlands eScience Center</organization>
 			<organizationUrl>https://www.esciencecenter.nl/</organizationUrl>
 		</developer>
+        <developer>
+            <name>Mario Frank</name>
+            <email>mario.frank@uni-potsdam.de</email>
+            <organization>University of Potsdam</organization>
+            <organizationUrl>https://www.uni-potsdam.de</organizationUrl>
+        </developer>
 	</developers>
 	<scm>
 		<connection>scm:git:git://github.com/workflomics/ape.git</connection>
@@ -31,8 +37,8 @@
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 	<build>
 			<plugins>
@@ -41,8 +47,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>17</source>
-					<target>17</target>
+					<source>21</source>
+					<target>21</target>
 					<!-- Enable additional compiler warnings -->
 					<compilerArgs>
 						<arg>-Xlint:all</arg>
@@ -67,8 +73,8 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>nl.uu.cs.ape.Main</Main-Class>
-										<X-Compile-Source-JDK>17</X-Compile-Source-JDK>
-										<X-Compile-Target-JDK>17</X-Compile-Target-JDK>
+										<X-Compile-Source-JDK>21</X-Compile-Source-JDK>
+										<X-Compile-Target-JDK>21</X-Compile-Target-JDK>
 									</manifestEntries>
 								</transformer>
 							</transformers>
