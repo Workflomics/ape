@@ -19,9 +19,9 @@
 	<developers>
 		<developer>
 			<name>Vedran Kasalica</name>
-			<email>v.kasalica@esciencecenter.nl</email>
-			<organization>Netherlands eScience Center</organization>
-			<organizationUrl>https://www.esciencecenter.nl/</organizationUrl>
+			<email>vedran.kasalica@health-ri.nl</email>
+			<organization>Health-RI</organization>
+			<organizationUrl>https://www.health-ri.nl/</organizationUrl>
 		</developer>
         <developer>
             <name>Mario Frank</name>
