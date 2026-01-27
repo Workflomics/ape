@@ -393,21 +393,23 @@ public class APE implements APEInterface {
 	 * @return true if the execution was successfully performed, false otherwise.
 	 */
 	public static boolean writeExecutableWorkflows(SolutionsList allSolutions) {
-		Path executionsFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Executables();
-		Integer noExecutions = allSolutions.getRunConfiguration().getNoExecutions();
-		if (executionsFolder == null || noExecutions == null || noExecutions == 0 || allSolutions.isEmpty()) {
-			return false;
-		}
+        if (allSolutions.isEmpty()) {
+            return false;
+        }
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+        Path executionsFolder = runConfig.getSolutionDirPath2Executables();
+        int noExecutions = runConfig.getNoExecutions();
+        if (executionsFolder == null || noExecutions == 0) {
+            return false;
+        }
+
 		APEUtils.printHeader(null, "Executing first " + noExecutions + " solution");
 		APEUtils.timerStart("executingWorkflows", true);
 
-		final File executeDir = executionsFolder.toFile();
-		if (executeDir.isDirectory()) {
-			// If the directory already exists, empty it first
-			deleteExistingFiles(executeDir, SolutionWorkflow.getFileNamePrefix(), "sh");
-		} else {
-			executeDir.mkdir();
-		}
+        /* Removing the existing files from the file system. */
+        prepareOutputDirectory(executionsFolder, "sh");
+
 		log.debug("Generating executable scripts.");
 
 		/* Creating the requested scripts in parallel. */
@@ -449,31 +451,33 @@ public class APE implements APEInterface {
 	 * @return true if the generating was successfully performed, false otherwise.
 	 */
 	public static boolean writeDataFlowGraphs(SolutionsList allSolutions, RankDir orientation) {
-		Path graphsFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Figures();
-		Integer noGraphs = allSolutions.getRunConfiguration().getNoGraphs();
-		if (graphsFolder == null || noGraphs == null || noGraphs == 0 || allSolutions.isEmpty()) {
-			return false;
-		}
+        if (allSolutions.isEmpty()) {
+            return false;
+        }
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+        Path graphsFolder = runConfig.getSolutionDirPath2Figures();
+        int noGraphs = runConfig.getNoGraphs();
+        if (graphsFolder == null || noGraphs == 0) {
+            return false;
+        }
+        // Store whether we are in debug mode.
+        boolean debugMode = runConfig.getDebugMode();
+
 		APEUtils.printHeader(null, "Generating graphical representation",
 				"of the first " + noGraphs + " workflows");
 		APEUtils.timerStart("drawingGraphs", true);
 
-		/* Removing the existing files from the file system. */
-		File graphDir = graphsFolder.toFile();
-		if (graphDir.isDirectory()) {
-			// If the directory already exists, empty it first
-			deleteExistingFiles(graphDir, SolutionWorkflow.getFileNamePrefix(), "png");
-		} else {
-			graphDir.mkdir();
-		}
+        /* Removing the existing files from the file system. */
+        prepareOutputDirectory(graphsFolder, "png");
+
 		log.debug("Generating data flow graphs (png).");
 		/* Creating the requested graphs in parallel. */
 		allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noGraphs).forEach(solution -> {
 			try {
 				String title = solution.getFileName();
 				Path path = graphsFolder.resolve(title);
-				solution.getDataflowGraph(title, orientation).write2File(path.toFile(), Format.PNG,
-						allSolutions.getRunConfiguration().getDebugMode());
+				solution.getDataflowGraph(title, orientation).write2File(path.toFile(), Format.PNG, debugMode);
 
 			} catch (IOException e) {
 				log.error("Error occurred while data flow graphs (png) to the file system.");
@@ -508,31 +512,32 @@ public class APE implements APEInterface {
 	 * @return true if the generating was successfully performed, false otherwise.
 	 */
 	public static boolean writeTavernaDesignGraphs(SolutionsList allSolutions, Format format) {
-		Path graphsFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Figures();
-		Integer noGraphs = allSolutions.getRunConfiguration().getNoGraphs();
-		if (graphsFolder == null || noGraphs == null || noGraphs == 0 || allSolutions.isEmpty()) {
-			return false;
-		}
+        if (allSolutions.isEmpty()) {
+            return false;
+        }
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+        Path graphsFolder = runConfig.getSolutionDirPath2Figures();
+        int noGraphs = runConfig.getNoGraphs();
+        if (graphsFolder == null || noGraphs == 0) {
+            return false;
+        }
+        // Store whether we are in debug mode.
+        boolean debugMode = runConfig.getDebugMode();
+
 		APEUtils.printHeader(null, "Generating graphical representation",
 				"of the first " + noGraphs + " workflows");
 		APEUtils.timerStart("drawingGraphs", true);
 
-		/* Removing the existing files from the file system. */
-		File graphDir = graphsFolder.toFile();
-		if (graphDir.isDirectory()) {
-			// If the directory already exists, empty it first
-			deleteExistingFiles(graphDir, SolutionWorkflow.getFileNamePrefix(), format.fileExtension);
-		} else {
-			graphDir.mkdir();
-		}
+        /* Removing the existing files from the file system. */
+        prepareOutputDirectory(graphsFolder, format.fileExtension);
 		log.debug("Generating data flow graphs (png).");
 		/* Creating the requested graphs in parallel. */
 		allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noGraphs).forEach(solution -> {
 			try {
 				String title = solution.getFileName();
 				Path path = graphsFolder.resolve(title);
-				solution.getTavernaStyleGraph(title).write2File(path.toFile(), format,
-						allSolutions.getRunConfiguration().getDebugMode());
+				solution.getTavernaStyleGraph(title).write2File(path.toFile(), format, debugMode);
 
 			} catch (IOException e) {
 				log.error("Error occurred while data flow graphs (png) to the file system.");
@@ -568,31 +573,32 @@ public class APE implements APEInterface {
 	 * @return true if the generating was successfully performed, false otherwise.
 	 */
 	public static boolean writeControlFlowGraphs(SolutionsList allSolutions, RankDir orientation) {
-		Path graphsFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Figures();
-		Integer noGraphs = allSolutions.getRunConfiguration().getNoGraphs();
-		if (graphsFolder == null || noGraphs == null || noGraphs == 0 || allSolutions.isEmpty()) {
+        if (allSolutions.isEmpty()) {
+            return false;
+        }
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+		Path graphsFolder = runConfig.getSolutionDirPath2Figures();
+		int noGraphs  = runConfig.getNoGraphs();
+		if (graphsFolder == null || noGraphs == 0) {
 			return false;
 		}
+        // Store whether we are in debug mode.
+        boolean debugMode = runConfig.getDebugMode();
+
 		APEUtils.printHeader(null, "Generating graphical representation",
 				"of the first " + noGraphs + " workflows");
 		APEUtils.timerStart("drawingGraphs", true);
 
 		/* Removing the existing files from the file system. */
-		File graphDir = graphsFolder.toFile();
-		if (graphDir.isDirectory()) {
-			// If the directory already exists, empty it first
-			deleteExistingFiles(graphDir, SolutionWorkflow.getFileNamePrefix(), "png");
-		} else {
-			graphDir.mkdir();
-		}
+        prepareOutputDirectory(graphsFolder, "png");
 		log.debug("Generating control flow graphs (png).");
 		/* Creating the requested graphs in parallel. */
 		allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noGraphs).forEach(solution -> {
 			try {
 				String title = solution.getFileName();
 				Path path = graphsFolder.resolve(title);
-				solution.getControlflowGraph(title, orientation).write2File(path.toFile(), Format.PNG,
-						allSolutions.getRunConfiguration().getDebugMode());
+				solution.getControlflowGraph(title, orientation).write2File(path.toFile(), Format.PNG, debugMode);
 
 			} catch (IOException e) {
 				log.error("Error occurred while writing control flow graphs (png) to the file system.");
@@ -613,28 +619,23 @@ public class APE implements APEInterface {
 	 * @return true if the execution was successfully performed, false otherwise.
 	 */
 	public static boolean writeCWLWorkflows(SolutionsList allSolutions) {
+        if (allSolutions.isEmpty()) {
+            return false;
+        }
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+        Path cwlFolder = runConfig.getSolutionDirPath2CWL();
+        int noCWLFiles = runConfig.getNoCWL();
+        if (cwlFolder == null || noCWLFiles == 0) {
+            return false;
+        }
 
-		if (allSolutions.isEmpty()) {
-			return false;
-		}
-		// Check the configuration before continuing.
-		Path cwlFolder = allSolutions.getRunConfiguration().getSolutionDirPath2CWL();
-		int noCWLFiles = allSolutions.getRunConfiguration().getNoCWL();
-		if (cwlFolder == null || noCWLFiles == 0 || allSolutions.isEmpty()) {
-			return false;
-		}
 		final String timerID = "writingCWL";
 		APEUtils.printHeader(null, String.format("Writing the first %d solution(s) to CWL files", noCWLFiles));
 		APEUtils.timerStart(timerID, true);
 
-		final File cwlDir = cwlFolder.toFile();
-		if (cwlDir.isDirectory()) {
-			// If the directory already exists, empty it first
-			deleteExistingFiles(cwlDir, SolutionWorkflow.getFileNamePrefix(), "cwl");
-		} else {
-			// Create the CWL directory if it does not already exist
-			cwlDir.mkdir();
-		}
+        /* Removing the existing files from the file system. */
+        prepareOutputDirectory(cwlFolder, "cwl");
 		log.debug("Generating CWL files.");
 
 		// Write the CWL files
@@ -671,8 +672,10 @@ public class APE implements APEInterface {
         if (allSolutions.isEmpty()) {
             return false;
         }
-        Path snakemakeFolder = allSolutions.getRunConfiguration().getSolutionDirPath2Snakemake();
-        int noSnakemakeFiles = allSolutions.getRunConfiguration().getNoSnakemake();
+        // Check the configuration before continuing.
+        APERunConfig runConfig = allSolutions.getRunConfiguration();
+        Path snakemakeFolder = runConfig.getSolutionDirPath2Snakemake();
+        int noSnakemakeFiles = runConfig.getNoSnakemake();
         if (snakemakeFolder == null || noSnakemakeFiles == 0) {
             return false;
         }
@@ -681,19 +684,13 @@ public class APE implements APEInterface {
         APEUtils.printHeader(null, String.format("Writing the first %d solution(s) to Snakemake files", noSnakemakeFiles));
         APEUtils.timerStart(timerID, true);
 
-        final File snakemakeDir = snakemakeFolder.toFile();
-        if (snakemakeDir.isDirectory()) {
-            // If the directory already exists, empty it first
-            deleteExistingFiles(snakemakeDir, SolutionWorkflow.getFileNamePrefix(), "snakefile");
-        } else {
-            // Create the Snakemake directory if it does not already exist
-            snakemakeDir.mkdir();
-        }
+        /* Removing the existing files from the file system. */
+        prepareOutputDirectory(snakemakeFolder, "snakefile");
         log.debug("Generating Snakemake files.");
 
         allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noSnakemakeFiles).forEach(solution -> {
             try {
-				String titleSnakefile= solution.getFileName() + "_snakefile";
+				String titleSnakefile = solution.getFileName() + "_snakefile";
 				File script = snakemakeFolder.resolve(titleSnakefile).toFile();
 				SnakemakeCreator snakemakeCreator = new SnakemakeCreator(solution);
 				APEFiles.write2file(snakemakeCreator.generateSnakemakeRepresentation(), script, false);
@@ -708,7 +705,25 @@ public class APE implements APEInterface {
         return true;
     }
 
-	/**
+    /**
+     * Prepares the output directory by removing all files with the given extension
+     * and creating the output directory if it does not exist.
+     *
+     * @param basePath The base path to create or clean up.
+     * @param fileExtension The extension of existing files to delete.
+     */
+    public static void prepareOutputDirectory(Path basePath, String fileExtension) {
+        final File baseDir = basePath.toFile();
+        if (baseDir.isDirectory()) {
+            // If the directory already exists, empty it first
+            deleteExistingFiles(baseDir, SolutionWorkflow.getFileNamePrefix(), fileExtension);
+        } else {
+            baseDir.mkdir();
+        }
+    }
+
+
+    /**
 	 * Delete all files in the given directory that start with the given prefix and
 	 * have the given extension.
 	 * 

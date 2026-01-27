@@ -2,6 +2,7 @@ package nl.uu.cs.ape.solver.solutionStructure.cwl;
 
 import nl.uu.cs.ape.models.Type;
 import nl.uu.cs.ape.solver.solutionStructure.ModuleNode;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.TypeNode;
 import nl.uu.cs.ape.utils.APEResources;
@@ -149,7 +150,7 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
                     // outputSource
                     .append(ind(2))
                     .append("outputSource: ")
-                    .append(stepName(typeNode.getCreatedByModule()))
+                    .append(SolutionCreationUtils.stepName(typeNode.getCreatedByModule()))
                     .append("/");
             // Get the id of the step run's output bound to this workflow output
             // (step_name/output_name_ID)
@@ -182,7 +183,7 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
         // Name
         cwlRepresentation
                 .append(ind(baseInd))
-                .append(stepName(moduleNode))
+                .append(SolutionCreationUtils.stepName(moduleNode))
                 .append(":\n");
         generateDefaultStepRun(moduleNode);
         generateStepIn(moduleNode);
@@ -236,7 +237,7 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
         IntStream.range(0, outputs.size()).filter(i -> !outputs.get(i).isEmpty())
                 .forEach(i -> {
                     String name = moduleNode.getOutputCWLKeys().get(i);
-                    addNewParameterToMap(outputs.get(i), String.format("%s/%s", stepName(moduleNode), name));
+                    addNewParameterToMap(outputs.get(i), String.format("%s/%s", SolutionCreationUtils.stepName(moduleNode), name));
                     cwlRepresentation
                             .append(name)
                             .append(", ");

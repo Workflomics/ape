@@ -186,6 +186,7 @@ public class APERunConfig {
         setNoExecutions(builder.noExecutions);
         setNoGraphs(builder.noGraphs);
         setNoCWL(builder.noCWL);
+        setNoSnakemake(builder.noSnakemake);
         setUseWorkflowInput(builder.useWorkflowInput);
         setUseAllGeneratedData(builder.useAllGeneratedData);
         setDebugMode(builder.debugMode);
@@ -685,6 +686,8 @@ public class APERunConfig {
 
         IBuildStage withNoCWL(int noCWL);
 
+        IBuildStage withNoSnakemake(int noSnakemake);
+
         IBuildStage withProgramInputs(List<Type> programInputs);
 
         IBuildStage withProgramOutputs(List<Type> programOutputs);
@@ -715,6 +718,7 @@ public class APERunConfig {
         private int noExecutions;
         private int noGraphs;
         private int noCWL;
+        private int noSnakemake;
         private List<Type> programInputs = Collections.emptyList();
         private List<Type> programOutputs = Collections.emptyList();
         private ConfigEnum useWorkflowInput;
@@ -782,6 +786,12 @@ public class APERunConfig {
         @Override
         public IBuildStage withNoCWL(int noCWL) {
             this.noCWL = noCWL;
+            return this;
+        }
+
+        @Override
+        public IBuildStage withNoSnakemake(int noSnakemake) {
+            this.noSnakemake = noSnakemake;
             return this;
         }
 
