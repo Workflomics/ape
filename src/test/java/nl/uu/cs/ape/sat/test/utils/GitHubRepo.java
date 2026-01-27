@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
+import nl.uu.cs.ape.utils.APEResources;
 import static nl.uu.cs.ape.sat.test.utils.Evaluation.fail;
 import static nl.uu.cs.ape.sat.test.utils.Evaluation.success;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,7 +34,7 @@ public class GitHubRepo {
     private HashMap<Integer, TempFile> files;
 
     public GitHubRepo(String repository, String commitOrBranch) {
-        this.absoluteLocalRoot = Paths.get(TestResources.getAbsoluteRoot(), "temp").toString();
+        this.absoluteLocalRoot = Paths.get(APEResources.getAbsoluteRoot(), "temp").toString();
         this.repository = repository;
         this.commit = commitOrBranch;
         this.files = new HashMap<>();

@@ -1,0 +1,25 @@
+
+{
+  "inputs": [
+    {
+      "_comment" : "MZML format and data",
+      "format": "http://edamontology.org/format_3244",
+      "data" : "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/2021-10-8_Ecoli.mzML"
+    },
+    {
+      "_comment" : "FASTA format and data",
+      "format": "http://edamontology.org/format_1929",
+      "data" : "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/up00000062.fasta"
+    },
+    {
+      "_comment" : "plain OBO format and data (plain means any OBO variant)",
+      "format": "http://edamontology.org/format_2196_plain",
+      "data" : "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/go.obo"
+    },
+    {
+      "_comment" : "plain TSV format and data (plain means any TSV variant)",
+      "format": "http://edamontology.org/format_3475_plain",
+      "data" : "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/goa_human.gaf"
+    }
+  ]
+}

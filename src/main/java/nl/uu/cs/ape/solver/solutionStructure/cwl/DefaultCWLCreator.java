@@ -4,11 +4,16 @@ import nl.uu.cs.ape.models.Type;
 import nl.uu.cs.ape.solver.solutionStructure.ModuleNode;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.TypeNode;
+import nl.uu.cs.ape.utils.APEResources;
+import nl.uu.cs.ape.utils.APEUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,16 +101,17 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
                     .append(typeNode.getFormat())
                     .append("\n");
             if (formatForCwlInputsYmlFile) {
-                /* TODO: FIX THIS. IT CANNOT BE HARDCODED. */
+                // Load resources file
+                JSONObject availableDataJson = APEResources.getJSONResource("default_cwl_creator_data.json");
+
                 Map<String, String> availableData = new HashMap<>();
-                availableData.put("http://edamontology.org/format_3244", // mzML
-                        "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/2021-10-8_Ecoli.mzML");
-                availableData.put("http://edamontology.org/format_1929", // FASTA
-                        "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/up00000062.fasta");
-                availableData.put("http://edamontology.org/format_2196_plain", // OBO format_p
-                        "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/go.obo");
-                availableData.put("http://edamontology.org/format_3475_plain", // TSV_p
-                        "https://raw.githubusercontent.com/Workflomics/DemoKit/main/data/inputs/goa_human_smaller.gaf");
+                for (JSONObject entry : APEUtils.getJSONListFromJson(availableDataJson, "inputs")) {
+                    String format = entry.getString("format");
+                    String data = entry.getString("data");
+
+                    availableData.put(format, data);
+                    log.trace("Read default CWL creator config format and data {} : {}", format, data);
+                }
                 String inputPath = availableData.containsKey(currTypeFormat) ? availableData.get(currTypeFormat)
                         : "set_full_path_to_the_file_with_extension_here";
                 inputsInCWL
