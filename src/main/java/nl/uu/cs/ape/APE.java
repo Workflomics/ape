@@ -429,7 +429,7 @@ public class APE implements APEInterface {
                     if (emptyOperations.isEmpty()) {
                         APEFiles.write2file(solution.getScriptExecution(), script, false);
                     } else {
-                        log.error("Cannot create {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                        log.info("Cannot create {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
                     }
                 }
 			} catch (IOException e) {
@@ -677,7 +677,7 @@ public class APE implements APEInterface {
                         DefaultCWLCreator cwlCreator = new DefaultCWLCreator(solution);
                         APEFiles.write2file(cwlCreator.generate(), script, false);
                     } else {
-                        log.error("Cannot create CWL file {} due to missing CWL reference for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                        log.info("Cannot create CWL file {} due to missing CWL reference for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
                     }
                 }
 
@@ -756,7 +756,7 @@ public class APE implements APEInterface {
                         SnakemakeCreator snakemakeCreator = new SnakemakeCreator(solution);
                         APEFiles.write2file(snakemakeCreator.generateSnakemakeRepresentation(), script, false);
                     } else {
-                        log.error("Cannot create Snakemake file {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
+                        log.info("Cannot create Snakemake file {} due to missing code for: {}", script.getAbsolutePath(), String.join(", ", emptyOperations));
                     }
                 }
             } catch (IOException e) {
