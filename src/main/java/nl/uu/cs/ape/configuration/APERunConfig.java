@@ -43,6 +43,10 @@ public class APERunConfig {
      */
     private final APEConfigTag<Path> SOLUTION_DIR_PATH = new APEConfigTagFactory.TAGS.SOLUTION_DIR_PATH();
     /**
+     * Mode is true if partial shell scripts are generated.
+     */
+    private final APEConfigTag<Boolean> CREATE_PARTIAL_SCRIPTS = new APEConfigTagFactory.TAGS.CREATE_PARTIAL_SCRIPTS();
+    /**
      * Min and Max possible length of the solutions (length of the automaton). For
      * no upper limit, max length should be set to 0.
      */
@@ -119,6 +123,7 @@ public class APERunConfig {
             this.CONSTRAINTS_FILE,
             this.CONSTRAINTS_CONTENT,
             this.SOLUTION_DIR_PATH,
+            this.CREATE_PARTIAL_SCRIPTS,
             this.SOLUTION_LENGTH_RANGE,
             this.NO_SOLUTIONS,
             this.NO_EXECUTIONS,
@@ -142,6 +147,7 @@ public class APERunConfig {
             new CONSTRAINTS_FILE(),
             new CONSTRAINTS_CONTENT(),
             new SOLUTION_DIR_PATH(),
+            new CREATE_PARTIAL_SCRIPTS(),
             new SOLUTION_LENGTH_RANGE(),
             new NO_SOLUTIONS(),
             new NO_EXECUTIONS(),
@@ -183,6 +189,7 @@ public class APERunConfig {
         setMaxNoSolutions(builder.maxNoSolutions);
         setToolSeqRepeat(builder.toolSeqRepeat);
         setSolutionPath(builder.solutionDirPath);
+        setCreatePartialScrips(builder.createPartialScripts);
         setNoExecutions(builder.noExecutions);
         setNoGraphs(builder.noGraphs);
         setNoCWL(builder.noCWL);
@@ -406,6 +413,22 @@ public class APERunConfig {
      */
     public void setSolutionPath(String solutionPath) {
         SOLUTION_DIR_PATH.setValue(Paths.get(solutionPath));
+    }
+
+    /**
+     * Gets partial script output mode.
+     *
+     * @return the value of {@link #CREATE_PARTIAL_SCRIPTS}
+     */
+    public boolean getCreatePartialScripts() {
+        return CREATE_PARTIAL_SCRIPTS.getValue();
+    }
+
+    /**
+     * @param createPartialScripts the partial script output mode to set
+     */
+    public void setCreatePartialScrips(boolean createPartialScripts) {
+        CREATE_PARTIAL_SCRIPTS.setValue(createPartialScripts);
     }
 
     /**
@@ -679,6 +702,8 @@ public class APERunConfig {
 
         IBuildStage withSolutionDirPath(String solutionPath);
 
+        IBuildStage withCreatePartialScripts(boolean createPartialScripts);
+
         IBuildStage withNoExecutions(int noExecutions);
 
         IBuildStage withNoGraphs(int noGraphs);
@@ -712,6 +737,7 @@ public class APERunConfig {
         private JSONArray constraintsJSON;
         private boolean toolSeqRepeat;
         private String solutionDirPath;
+        private boolean createPartialScripts;
         private int noExecutions;
         private int noGraphs;
         private int noCWL;
@@ -764,6 +790,12 @@ public class APERunConfig {
         @Override
         public IBuildStage withSolutionDirPath(String solutionDirPath) {
             this.solutionDirPath = solutionDirPath;
+            return this;
+        }
+
+        @Override
+        public IBuildStage withCreatePartialScripts(boolean createPartialScripts) {
+            this.createPartialScripts = createPartialScripts;
             return this;
         }
 

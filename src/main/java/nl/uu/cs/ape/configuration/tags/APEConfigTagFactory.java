@@ -828,6 +828,33 @@ public class APEConfigTagFactory {
         /**
          * Configuration field.
          */
+        public static class CREATE_PARTIAL_SCRIPTS extends TYPES.Bool {
+
+            @Override
+            public String getTagName() {
+                return "create_partial_scripts";
+            }
+
+            @Override
+            public String getLabel() {
+                return "Create partial script files";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Tag to indicate whether partial shell scripts shall be created.";
+            }
+
+            @Override
+            public APEConfigDefaultValue<Boolean> getDefault() {
+                return APEConfigDefaultValue.withDefault(true);
+            }
+        }
+
+
+        /**
+         * Configuration field.
+         */
         public static class NO_EXECUTIONS extends TYPES.Int {
 
             public NO_EXECUTIONS() {
