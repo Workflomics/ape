@@ -5,7 +5,7 @@
 | Badges |                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 |:----:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Fairness** | [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F-green)](https://fair-software.eu) [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5749/badge)](https://www.bestpractices.dev/projects/5749)                                                                                                              |
-| **Packages and Releases** | [![Latest release](https://img.shields.io/github/release/workflomics/ape.svg)](https://github.com/workflomics/ape/releases/latest) [![Maven Central](https://badgen.net/maven/v/maven-central/io.github.sanctuuary/APE)](https://mvnrepository.com/artifact/io.github.sanctuuary/APE) [![Static Badge](https://img.shields.io/badge/RSD-APE-ape)](https://research-software-directory.org/software/ape-automated-pipeline-explorer) 
+| **Packages and Releases** | [![Latest release](https://img.shields.io/github/release/workflomics/ape.svg)](https://github.com/workflomics/ape/releases/latest) [![Maven Central](https://badgen.net/maven/v/maven-central/org.workflomics/APE)](https://mvnrepository.com/artifact/org.workflomics/APE) [![Static Badge](https://img.shields.io/badge/RSD-APE-ape)](https://research-software-directory.org/software/ape-automated-pipeline-explorer) 
 | **Build Status** | [![Build](https://github.com/workflomics/ape/actions/workflows/mvnbuild.yml/badge.svg)](https://github.com/workflomics/ape/actions/workflows/mvnbuild.yml) [![CodeQL Analysis](https://github.com/workflomics/ape/actions/workflows/codeql.yml/badge.svg)](https://github.com/workflomics/ape/actions/workflows/codeql.yml)                                                                                                         |
 | **Documentation** | [![Documentation Status](https://readthedocs.org/projects/ape-framework/badge/?version=latest)](https://ape-framework.readthedocs.io/en/latest/?badge=latest)                                                                                                                                                                                                                                                                       |
 | **DOI** | [![DOI](https://zenodo.org/badge/227861653.svg)](https://zenodo.org/badge/latestdoi/227861653)                                                                                                                                                                                                                                                                                                                                      |
@@ -33,7 +33,7 @@ To [run](https://github.com/workflomics/ape#how-to-run-ape-from-the-command-line
 To [build](https://github.com/workflomics/ape#build-ape-from-source-using-maven) APE from source, [Maven 3.3+](https://maven.apache.org/download.cgi) has to be installed as well (use the command `$ mvn -version` to check your local version).
 
 
-> **_Note:_**  Building APE from source is not required to run it, as the latest stable version is available at [maven repository](https://mvnrepository.com/artifact/io.github.sanctuuary/APE/latest).
+> **_Note:_**  Building APE from source is not required to run it, as the latest stable version is available at [maven repository](https://mvnrepository.com/artifact/org.workflomics/APE/latest).
 
 ### Releases 
 
@@ -44,6 +44,19 @@ To [build](https://github.com/workflomics/ape#build-ape-from-source-using-maven)
 ### Add APE to your Maven project
 
 To add a dependency on APE using Maven, use the following:
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.workflomics/APE -->
+<dependency>
+    <groupId>org.workflomics</groupId>
+    <artifactId>APE</artifactId>
+    <version>2.6.x</version>
+</dependency>
+```
+
+For information regarding **Gradle**, **Ivy**, etc. we refer to the [APE mvn repository](https://mvnrepository.com/artifact/org.workflomics/APE/latest).
+
+To add a dependency on older versions of APE using Maven, use the following:
 
 ```xml
 <!-- https://mvnrepository.com/artifact/io.github.sanctuuary/APE -->
@@ -60,17 +73,18 @@ For information regarding **Gradle**, **Ivy**, etc. we refer to the [APE mvn rep
 
 | Date       | Version | Download                                                                                                                                                                                                                                                                                                                                                                                                                 |
 |------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 15-07-2020 | 1.0.1   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-sources.jar)         |
-| 02-05-2021 | 1.1.7   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-sources.jar)         |
-| 20-12-2021 | 1.1.12  | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-sources.jar) |
-| 17-05-2022 | 2.0.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-sources.jar)         |
-| 19-02-2024 | 2.3.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-sources.jar)         |
-| 09-06-2025 | 2.5.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-sources.jar)         |
-| 10-06-2025 | 2.5.2   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-sources.jar)         |
 | 29-09-2025 | 2.5.3   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.3/APE-2.5.3.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.3/APE-2.5.3-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.3/APE-2.5.3-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.3/APE-2.5.3-sources.jar)         |
+| 10-06-2025 | 2.5.2   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.2/APE-2.5.2-sources.jar)         |
+| 09-06-2025 | 2.5.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.5.0/APE-2.5.0-sources.jar)         |
+| 19-02-2024 | 2.3.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.3.0/APE-2.3.0-sources.jar)         |
+| 17-05-2022 | 2.0.0   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/2.0.0/APE-2.0.0-sources.jar)         |
+| 20-12-2021 | 1.1.12  | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.12/APE-1.1.12-sources.jar) |
+| 02-05-2021 | 1.1.7   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.1.7/APE-1.1.7-sources.jar)         |
+| 15-07-2020 | 1.0.1   | [jar](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1.jar), [executable](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-executable.jar), [javadoc](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-javadoc.jar), [sources](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/1.0.1/APE-1.0.1-sources.jar)         |
 
-The complete list of releases can be found on the [MVN Repository](https://mvnrepository.com/artifact/io.github.sanctuuary/APE).
+The complete list of releases can be found on the [MVN Repository](https://mvnrepository.com/artifact/org.workflomics/APE).
 
+Older releases (`< 2.6`), can be found in the previous [MVN Repository](https://mvnrepository.com/artifact/io.github.sanctuuary/APE).
 
 ### Build APE from source (using Maven)
 
@@ -88,7 +102,7 @@ Automated workflow composition with APE can be performed through its command lin
 
 ### How to run APE from the command line
 
-**APE-[latest]-executable.jar** is available in [maven repository](https://mvnrepository.com/artifact/io.github.sanctuuary/APE/latest).
+**APE-[latest]-executable.jar** is available in [maven repository](https://mvnrepository.com/artifact/org.workflomics/APE/latest).
 
 When running APE-[latest]-executable.jar from the command line, it requires a JSON configuration file given as a parameter and executes the automated workflow composition process accordingly:
 
@@ -113,7 +127,7 @@ or
 git clone https://github.com/sanctuuary/APE_UseCases.git
 ```
 
-Download the latest version of [`APE-[latest]-executable.jar`](https://repo.maven.apache.org/maven2/io/github/sanctuuary/APE/) and add it to the APE_UseCases directory (`~/git/APE_UseCases`)
+Download the latest version of [`APE-[latest]-executable.jar`](https://repo.maven.apache.org/maven2/org/workflomics/APE/) and add it to the APE_UseCases directory (`~/git/APE_UseCases`)
 
 ```shell
 cd ~/git/APE_UseCases
@@ -160,7 +174,8 @@ runConfig.setUseWorkflowInput(ConfigEnum.ONE);
 SATsolutionsList solutions2 = ape.runSynthesis(runConfig);
 ```
 
-For more information see [APE javadoc.io](https://javadoc.io/doc/io.github.sanctuuary/APE/latest/nl/uu/cs/ape/sat/APE.html) page.
+For more information see [APE javadoc.io](https://javadoc.io/doc/org.workflomics/APE/latest/nl/uu/cs/ape/sat/APE.html) or
+the [APE (< 2.6) javadoc.io](https://javadoc.io/doc/io.github.sanctuuary/APE/latest/nl/uu/cs/ape/sat/APE.html) page.
 
 
 ## APE v2 architecture
@@ -171,27 +186,21 @@ The architecture of the APE v2 library is presented in the following figure. Com
 
 ## APE Web
 
-Graphical Web Interface for the APE library is available at [APE Web](https://github.com/sanctuuary/APE-Web).
+Graphical Web Interface for the APE library is available at [APE Web](https://github.com/Workflomics/APE-Web).
 
 ## Use Cases and Demos
 
 Our use cases are motivated by practical problems in various domains (e.g. bioinformatics, GIS [[3]](#3)). Different examples are available at the [APE Use Cases Repository](https://github.com/sanctuuary/APE_UseCases).
 
-
-## The APE team
-
-* Vedran Kasalica (v.kasalica[at]esciencecenter.nl), lead developer
-* Maurin Voshol, student developer
-* Koen Haverkort, student developer
-* Anna-Lena Lamprecht (anna-lena.lamprecht[at]uni-potsdam.de), project initiator and principal investigator
-
 ## Contact
 
-For any questions concerning APE please get in touch with Vedran Kasalica (v.kasalica[at]esciencecenter.nl.nl).
+For any questions concerning APE please get in touch with Anna-Lena Lamprecht (anna-lena.lamprecht[at]uni-potsdam.de).
 
 ## Contributions
 
-We welcome all contributions (bug reports, bug fixes, feature requests, extensions, use cases, etc.) to APE. Please get in touch with Vedran Kasalica (v.kasalica[at]esciencecenter.nl.nl) to coordinate your contribution. We expect all contributors to follow our [Code of Conduct](https://github.com/workflomics/ape/blob/master/CODE_OF_CONDUCT.md).
+We welcome all contributions (bug reports, bug fixes, feature requests, extensions, use cases, etc.) to APE.
+Please get in touch with Anna-Lena Lamprecht (anna-lena.lamprecht[at]uni-potsdam.de) to coordinate your contribution.
+We expect all contributors to follow our [Code of Conduct](https://github.com/workflomics/ape/blob/master/CODE_OF_CONDUCT.md).
 
 In case you have a specific request, want to report a bug or suggest a new constraint template please make an issue [here](https://github.com/workflomics/ape/issues/new).
 
