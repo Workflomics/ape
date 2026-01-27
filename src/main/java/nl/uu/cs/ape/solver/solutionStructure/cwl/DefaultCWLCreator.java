@@ -5,6 +5,7 @@ import nl.uu.cs.ape.solver.solutionStructure.ModuleNode;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.TypeNode;
 import nl.uu.cs.ape.utils.APEResources;
+import nl.uu.cs.ape.utils.APEUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -102,11 +103,9 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
             if (formatForCwlInputsYmlFile) {
                 // Load resources file
                 JSONObject availableDataJson = APEResources.getJSONResource("default_cwl_creator_data.json");
-                JSONArray inputsArray = availableDataJson.getJSONArray("inputs");
 
                 Map<String, String> availableData = new HashMap<>();
-                for (int j = 0; j < inputsArray.length(); j++) {
-                    JSONObject entry = inputsArray.getJSONObject(j);
+                for (JSONObject entry : APEUtils.getJSONListFromJson(availableDataJson, "inputs")) {
                     String format = entry.getString("format");
                     String data = entry.getString("data");
 
