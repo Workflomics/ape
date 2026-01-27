@@ -7,8 +7,8 @@ type: software
 authors:
   - given-names: Vedran
     family-names: Kasalica
-    email: v.kasalica@esciencecenter.nl
-    affiliation: Netherlands eScience Center, Netherlands
+    email: vedran.kasalica@health-ri.nl
+    affiliation: Health-RI, Netherlands
     orcid: 'https://orcid.org/0000-0002-0097-1056'
   - given-names: Anna-Lena
     family-names: Lamprecht
