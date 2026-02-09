@@ -153,7 +153,7 @@ public class SnakemakeCreator {
         String moduleName = moduleNode.getUsedModule().getPredicateLabel();
         String command = moduleNode.getUsedModule().getExecutionCommand();
         if (command == null || command.equals("")) {
-            log.info("No command for {} specified, using this name as fallback command \"{}\"", moduleName);
+            log.info("No command for {} specified, using this name as fallback command.", moduleName);
             command = moduleName;
         }
         snakemakeRepresentation
