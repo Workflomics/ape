@@ -1,8 +1,10 @@
 package nl.uu.cs.ape.solver.solutionStructure.snakemake;
 
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils;
+import nl.uu.cs.ape.solver.solutionStructure.SolutionCreationUtils.IndentStyle;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
-import nl.uu.cs.ape.solver.solutionStructure.cwl.CWLWorkflowBase.IndentStyle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -44,10 +46,7 @@ public class SnakemakeCreator {
         addWorkflowInputs();
         generateRuleAll();
         for (ModuleNode moduleNode : solution.getModuleNodes()) {
-            snakemakeRepresentation
-                    .append("rule ")
-                    .append(stepName(moduleNode))
-                    .append(":\n");
+            snakemakeRepresentation.append(String.format("rule %s:\n", SolutionCreationUtils.stepName(moduleNode)));
             generateRuleInput(moduleNode);
             generateRuleOutput(moduleNode);
             generateRuleShell(moduleNode);
@@ -73,7 +72,7 @@ public class SnakemakeCreator {
             int outId = typeNode.getCreatedByModule().getOutputTypes().get(i - 1).getAutomatonState()
                     .getLocalStateNumber();
             snakemakeRepresentation
-                    .append(generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
+                    .append(SolutionCreationUtils.generateInputOrOutputName(typeNode.getCreatedByModule(), "out", outId + 1))
                     .append("'\n");
             i++;
         }
@@ -100,19 +99,19 @@ public class SnakemakeCreator {
         snakemakeRepresentation
                 .append(ind(1))
                 .append("input:\n");
-        if (moduleNode.hasInputTypes()){
-            List<TypeNode> inputs = moduleNode.getInputTypes();
-            IntStream.range(0, inputs.size()).filter(i -> !inputs.get(i).isEmpty())
-                    .forEach(i -> snakemakeRepresentation
-                            .append(ind(2))
-                            .append(String.format("'add-path/%s'", workflowParameters.get(inputs.get(i).getNodeID())))
-                            .append(",\n"));
-            if (moduleNode.hasOutputTypes()) {
-            // Remove the last comma
-            deleteLastNCharactersFromSnakefile(2);
+
+        List<String> validInputs = new ArrayList<>();
+        // Create a path representation for each valid, i.e. non-empty, input type
+        for (TypeNode node : moduleNode.getInputTypes())
+        {
+            if (!node.isEmpty())
+            {
+                validInputs.add(String.format("%s'add-path/%s'", ind(2), workflowParameters.get(node.getNodeID())));
             }
-            snakemakeRepresentation.append("\n");
         }
+
+        // Join all valid input representations with a colon followed by a newline
+        snakemakeRepresentation.append(String.join(",\n", validInputs)).append("\n");
     }
 
     /**
@@ -124,22 +123,25 @@ public class SnakemakeCreator {
         snakemakeRepresentation
                 .append(ind(1))
                 .append("output:\n");
-        
-        List<TypeNode> outputs = moduleNode.getOutputTypes();
-        IntStream.range(0, outputs.size()).filter(i -> !outputs.get(i).isEmpty())
-                .forEach(i -> {
-                    String name = generateInputOrOutputName(moduleNode, "out", i + 1);
-                    addNewParameterToMap(outputs.get(i), String.format("%s", name));
-                    snakemakeRepresentation
-                            .append(ind(2))
-                            .append(String.format("'add-path/%s'", name))
-                            .append(",\n");
-                });
-        if (moduleNode.hasOutputTypes()) {
-            // Remove the last comma
-            deleteLastNCharactersFromSnakefile(2);
+
+        List<String> validOutput = new ArrayList<>();
+        int validOutputId = 0;
+        // Create a path representation for each valid, i.e. non-empty, output type
+        for (TypeNode node : moduleNode.getOutputTypes())
+        {
+            if (!node.isEmpty())
+            {
+                // Increment the output id and generate the output name
+                validOutputId += 1;
+                String name = SolutionCreationUtils.generateInputOrOutputName(moduleNode, "out",  validOutputId);
+                addNewParameterToMap(node, String.format("%s", name));
+
+                validOutput.add(String.format("%s'add-path/%s'", ind(2), name));
+            }
         }
-        snakemakeRepresentation.append("\n");
+
+        // Join all valid output representations with a colon followed by a newline
+        snakemakeRepresentation.append(String.join(",\n", validOutput)).append("\n");
     }
 
     /**
@@ -151,7 +153,7 @@ public class SnakemakeCreator {
         String moduleName = moduleNode.getUsedModule().getPredicateLabel();
         String command = moduleNode.getUsedModule().getExecutionCommand();
         if (command == null || command.equals("")) {
-            log.info("No command for {} specified, using this name as fallback command \"{}\"", moduleName);
+            log.info("No command for {} specified, using this name as fallback command.", moduleName);
             command = moduleName;
         }
         snakemakeRepresentation
@@ -167,41 +169,16 @@ public class SnakemakeCreator {
         return typeNode.getNodeID();
     }
 
-    public void deleteLastNCharactersFromSnakefile(int numberOfCharToDel) {
-        snakemakeRepresentation.delete(snakemakeRepresentation.length() - numberOfCharToDel, snakemakeRepresentation.length());
-    }
 
     /**
      * Adds the comment at the top of the file.
      */
     protected void generateTopComment() {
-        snakemakeRepresentation.append(String.format("# %s%n", getWorkflowName()));
+        snakemakeRepresentation.append(String.format("# %s%n", SolutionCreationUtils.getWorkflowName(solution)));
         snakemakeRepresentation.append("# This workflow is generated by APE (https://github.com/workflomics/ape).\n");
     }
 
-    /**
-     * Get the name of the workflow.
-     * 
-     * @return The name of the workflow.
-     */
-    private String getWorkflowName() {
-        return String.format("WorkflowNo_%d", solution.getIndex());
-    }
 
-    /**
-     * Generate the name for a step in the workflow.
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @return The name of the workflow step.
-     */
-    protected String stepName(ModuleNode moduleNode) {
-        int stepNumber = moduleNode.getAutomatonState().getLocalStateNumber();
-        if (stepNumber < 10) {
-            return String.format("%s_0%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        } else {
-            return String.format("%s_%d", moduleNode.getUsedModule().getPredicateLabel(), stepNumber);
-        }
-    }
 
     /**
      * Generate the indentation at the start of a line.
@@ -210,27 +187,7 @@ public class SnakemakeCreator {
      * @return The indentation of the given level.
      */
     protected String ind(int level) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            builder.append(this.indentStyle);
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Generate the name of the input or output of a step's run input or output.
-     * I.e. "moduleName_indicator_n".
-     * 
-     * @param moduleNode The {@link ModuleNode} that is the workflow step.
-     * @param indicator  Indicator whether it is an input or an output.
-     * @param n          The n-th input or output this is.
-     * @return The name of the input or output.
-     */
-    protected String generateInputOrOutputName(ModuleNode moduleNode, String indicator, int n) {
-        return String.format("%s_%s_%d",
-                moduleNode.getNodeLabel(),
-                indicator,
-                n);
+        return SolutionCreationUtils.ind(level, this.indentStyle);
     }
 
 }
