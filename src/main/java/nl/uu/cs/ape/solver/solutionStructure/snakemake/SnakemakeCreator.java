@@ -148,10 +148,15 @@ public class SnakemakeCreator {
      * @param moduleNode The {@link ModuleNode} corresponding to the rule.
      */
     private void generateRuleShell(ModuleNode moduleNode) {
-        String name = moduleNode.getUsedModule().getPredicateLabel();
+        String moduleName = moduleNode.getUsedModule().getPredicateLabel();
+        String command = moduleNode.getUsedModule().getExecutionCommand();
+        if (command == null || command.equals("")) {
+            log.info("No command for {} specified, using this name as fallback command \"{}\"", moduleName);
+            command = moduleName;
+        }
         snakemakeRepresentation
                 .append(ind(1))
-                .append(String.format("shell: 'add-path-to-implementation/%s {input} {output}'", name))
+                .append(String.format("shell: 'add-path-to-implementation/%s {input} {output}'", command))
                 .append("\n");
     }
 

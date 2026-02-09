@@ -255,11 +255,14 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
      */
     private void generateDefaultStepRun(ModuleNode moduleNode) {
         final int baseInd = 2;
-        String moduleReference = "add-path-to-the-implementation/" + moduleNode.getUsedModule().getPredicateID()
-                + ".cwl ";
+        String moduleName = moduleNode.getUsedModule().getPredicateID();
+        String moduleReference = "add-path-to-the-implementation/" + moduleName + ".cwl ";
         if (moduleNode.getUsedModule().getCwlFileReference() != null) {
             moduleReference = moduleNode.getUsedModule().getCwlFileReference();
+        } else {
+            log.info("No CWL reference for {} specified, using fallback reference \"{}\"", moduleName, moduleReference);
         }
+
         cwlRepresentation
                 // Main key
                 .append(ind(baseInd))
