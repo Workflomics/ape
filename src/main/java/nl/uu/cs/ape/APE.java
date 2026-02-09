@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
