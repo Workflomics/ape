@@ -5,15 +5,14 @@
 The following versions of APE are currently supported with security updates:
 
 | Version | Supported          |
-| ------- | ------------------ |
-| 2.2.x   | :white_check_mark: |
-| 2.1.x   | :x:                |
-| 2.0.x   | :x:                |
-| < 2.0   | :x:                |
+|---------| ------------------ |
+| 2.6.x   | :white_check_mark: |
+| 2.5.x   | :white_check_mark: |
+| < 2.5   | :x:                |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in APE, please report it by sending an email to v.kasalica[at]esciencecenter.nl. We ask that you do not publicly disclose the issue until it has been addressed.
+If you discover a security vulnerability in APE, please report it by sending an email to anna-lena.lamprecht[at]uni-potsdam.de. We ask that you do not publicly disclose the issue until it has been addressed.
 
 In your report, please provide the following information:
 
@@ -27,7 +26,7 @@ We are committed to responding promptly to security reports. We will acknowledge
 
 Our security response team consists of the following individuals:
 
-- Vedran Kasalica (v.kasalica[at]esciencecenter.nl)
+- Anna-Lena Lamprecht (anna-lena.lamprecht[at]uni-potsdam.de)
 
 Please contact the team directly for security-related matters.
 
