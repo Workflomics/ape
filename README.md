@@ -28,9 +28,9 @@ For our paper at [ICCS 2020](https://www.iccs-meeting.org/iccs2020/) [[2]](#2) w
 
 ## Requirements
 
-To [run](https://github.com/workflomics/ape#how-to-run-ape-from-the-command-line) APE locally you need to have [Java 1.8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (or higher) installed on your system (use the command `$ java -version` to check your local version).
+To [run](https://github.com/workflomics/ape#how-to-run-ape-from-the-command-line) APE locally you need to have [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) (or higher) installed on your system (use the command `$ java -version` to check your local version).
 
-To [build](https://github.com/workflomics/ape#build-ape-from-source-using-maven) APE from source, [Maven 3.3+](https://maven.apache.org/download.cgi) has to be installed as well (use the command `$ mvn -version` to check your local version).
+To [build](https://github.com/workflomics/ape#build-ape-from-source-using-maven) APE from source, [Maven 3.8+](https://maven.apache.org/download.cgi) has to be installed as well (use the command `$ mvn -version` to check your local version).
 
 
 > **_Note:_**  Building APE from source is not required to run it, as the latest stable version is available at [maven repository](https://mvnrepository.com/artifact/org.workflomics/APE/latest).
