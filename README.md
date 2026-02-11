@@ -150,11 +150,16 @@ Like the CLI, the APE API relies on a configuration file that references the dom
 APE ape = new APE("path/to/setup-configuration.json");
 
 // run the synthesis
-SATsolutionsList solutions = ape.runSynthesis("path/to/run-configuration.json");
+SolutionsList solutions = ape.runSynthesis("path/to/run-configuration.json");
+// Set that partial implementations shall be allowed (missing explicit CLI names of tools are then marked with placeholders).
+bool createPartialImplementations = true;
+
 // write the solutions for the file system
 APE.writeSolutionToFile(solutions);
 APE.writeDataFlowGraphs(solutions, RankDir.TOP_TO_BOTTOM);
 APE.writeExecutableWorkflows(solutions);
+APE.writeCWLWorkflows(solutions, createPartialImplementations);
+APE.writeSnakemakeWorkflows(solutions, createPartialImplementations);
 ```
 
 However, the API allows to generate and edit the configuration file programmatically:
@@ -168,11 +173,11 @@ APE ape = new APE(coreConfig);
 APERunConfig runConfig = APERunConfig.builder().withSolutionMinLength(1).withSolutionMaxLength(10)
                                                 .withMaxNoSolutions(100).withApeDomainSetup(ape.getDomainSetup())
                                                 .build();
-SATsolutionsList solutions1 = ape.runSynthesis(runConfig);
+SolutionsList solutions1 = ape.runSynthesis(runConfig);
 
 // run the synthesis again with altered parameters
 runConfig.setUseWorkflowInput(ConfigEnum.ONE);
-SATsolutionsList solutions2 = ape.runSynthesis(runConfig);
+SolutionsList solutions2 = ape.runSynthesis(runConfig);
 ```
 
 For more information see [APE javadoc.io](https://javadoc.io/doc/org.workflomics/APE/latest/nl/uu/cs/ape/sat/APE.html) or
