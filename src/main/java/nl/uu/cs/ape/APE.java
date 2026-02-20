@@ -728,12 +728,12 @@ public class APE implements APEInterface {
         APEUtils.timerStart(timerID, true);
 
         /* Removing the existing files from the file system. */
-        prepareOutputDirectory(snakemakeFolder, "snakefile");
+        prepareOutputDirectory(snakemakeFolder, "smk");
         log.debug("Generating Snakemake files.");
 
         allSolutions.getParallelStream().filter(solution -> solution.getIndex() < noSnakemakeFiles).forEach(solution -> {
             try {
-                String titleSnakefile = solution.getFileName() + "_snakefile";
+                String titleSnakefile = solution.getFileName() + ".smk";
                 File script = snakemakeFolder.resolve(titleSnakefile).toFile();
 
                 if (createPartialImplementations) {
