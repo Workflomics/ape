@@ -1,0 +1,351 @@
+{
+    "functions": [
+      {
+        "label": "create_project",
+        "id": "create_project",
+        "taxonomyOperations": ["CreateProject"],
+        "outputs": [
+          { "Type": ["Project"], "Format": ["pyiron_atomistics.project.Project"] }
+        ],
+        "implementation": { "code": "python - << EOF\nfrom pyiron.project import Project\npr = Project('example_project')\n" }
+      },
+      {
+        "label": "create_structure_bulk",
+        "id": "create_structure_bulk",
+        "taxonomyOperations": ["CreateStructureBulk"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Material"], "Format": ["String"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "structure = pr.create.structure.ase.bulk(Material, cubic=True)\n" }
+      },
+      {
+        "label": "create_structure_slab",
+        "id": "create_structure_slab",
+        "taxonomyOperations": ["CreateStructureSlab"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Material"], "Format": ["String"] }
+        ],
+        "outputs": [
+          { "Type": ["Slab"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "structure = pr.create_surface(Material, surface_type='fcc111', size=(3, 4, 4), vacuum=10, orthogonal=True)\n" }
+      },
+      {
+        "label": "plot_structure",
+        "id": "plot_structure",
+        "taxonomyOperations": ["PlotStructure"],
+        "inputs": [
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["3dPlot"], "Format": ["PlotFormat"] }
+        ],
+        "implementation": { "code": "" }
+      },
+      {
+        "label": "create_vacancy_Al",
+        "id": "create_vacancy_Al",
+        "taxonomyOperations": ["CreateVacancyAl"],
+        "inputs": [
+          { "Type": ["Bulk"] },
+          { "Type": ["Position"], "Format": ["Coordinates"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "# Create Vacancy Structure\nvacancy_structure = structure.copy()\ndel vacancy_structure[1]\n" }
+      },
+      {
+        "label": "create_vacancy_Fe",
+        "id": "create_vacancy_Fe",
+        "taxonomyOperations": ["CreateVacancyFe"],
+        "inputs": [
+          { "Type": ["Bulk"] },
+          { "Type": ["Position"], "Format": ["Coordinates"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "# Create Vacancy Structure\nvacancy_structure = structure.copy()\ndel vacancy_structure[1]\n" }
+      },
+      {
+        "label": "create_antisite_Al",
+        "id": "create_antisite_Al",
+        "taxonomyOperations": ["CreateAntisiteAl"],
+        "inputs": [
+          { "Type": ["Bulk"] },
+          { "Type": ["Position"], "Format": ["Coordinates"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "create_antisite_Fe",
+        "id": "create_antisite_Fe",
+        "taxonomyOperations": ["CreateAntisiteFe"],
+        "inputs": [
+          { "Type": ["Bulk"] },
+          { "Type": ["Position"], "Format": ["Coordinates"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "relax_structure",
+        "id": "relax_structure",
+        "taxonomyOperations": ["RelaxStructure"],
+        "inputs": [
+          { "Type": ["Bulk"] }
+        ],
+        "outputs": [
+          { "Type": ["Bulk"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "# Relax Structure\nrelax_job = pr.create_job(job_type=pr.job_type.Lammps, job_name='lammps_relax')\nrelax_job.structure = vacancy_structure\nrelax_job.potential = relax_job.list_potentials()[0]\nrelax_job.calc_minimize(pressure=0.0)\nrelax_job.run()\nrelax_structure = relax_job.get_final_structure()\n" }
+      },
+      {
+        "label": "relax_structure",
+        "id": "relax_structure",
+        "taxonomyOperations": ["RelaxStructure"],
+        "inputs": [
+          { "Type": ["Slab"] }
+        ],
+        "outputs": [
+          { "Type": ["Slab"], "Format": ["pyiron_atomistics.atomistics.structure.atoms.Atoms"] }
+        ],
+        "implementation": { "code": "# Relax Structure\nrelax_job = pr.create_job(job_type=pr.job_type.Lammps, job_name='lammps_relax')\nrelax_job.structure = vacancy_structure\nrelax_job.potential = relax_job.list_potentials()[0]\nrelax_job.calc_minimize(pressure=0.0)\nrelax_job.run()\nrelax_structure = relax_job.get_final_structure()\n" }
+      },
+      {
+        "label": "create_job_lammps",
+        "id": "create_job_lammps",
+        "taxonomyOperations": ["CreateJobLammps"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["Lammps"], "Format": ["pyiron_atomistics.lammps.lammps.Lammps"] }
+        ],
+        "implementation": { "code": "job = pr.create_job(job_type=pr.job_type.Lammps, job_name='lammps')\njob.structure = structure\n" }
+      },
+      {
+        "label": "create_job_gpaw",
+        "id": "create_job_gpaw",
+        "taxonomyOperations": ["CreateJobGpaw"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["GPAW"], "Format": ["pyiron_atomistics.gpaw.gpaw.Gpaw"] }
+        ],
+        "implementation": { "code": "job = pr.create_job(job_type=pr.job_type.Gpaw, job_name='gpaw_job')\njob.structure = structure\n" }
+      },
+      {
+        "label": "create_job_sphinx",
+        "id": "create_job_sphinx",
+        "taxonomyOperations": ["CreateJobSphinx"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["Sphinx"], "Format": ["pyiron_atomistics.sphinx.sphinx.Sphinx"] }
+        ],
+        "implementation": { "code": "job = pr.create_job(job_type=pr.job_type.Sphinx, job_name='sphinx_job')\njob.structure = structure\n" }
+      },
+      {
+        "label": "create_job_vasp",
+        "id": "create_job_vasp",
+        "taxonomyOperations": ["CreateJobVasp"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["VASP"], "Format": ["pyiron_atomistics.vasp.vasp.Vasp"] }
+        ],
+        "implementation": { "code": "job = pr.create_job(job_type=pr.job_type.Vasp, job_name='vasp_job')\njob.structure = structure\n" }
+      },
+      {
+        "label": "create_job_murn",
+        "id": "create_job_murn",
+        "taxonomyOperations": ["CreateJobMurnaghan"],
+        "inputs": [
+          { "Type": ["Project"] },
+          { "Type": ["DFT", "Lammps"] }
+        ],
+        "outputs": [
+          { "Type": ["Murnaghan"], "Format": ["pyiron_atomistics.atomistics.master.murnaghan.Murnaghan"] }
+        ],
+        "implementation": { "code": "murn = pr.create_job(job_type=pr.job_type.Murnaghan, job_name='murn')\nmurn.ref_job = job\n" }
+      },
+      {
+        "label": "run_job_lammps",
+        "id": "run_job_lammps",
+        "taxonomyOperations": ["RunLammpsJob"],
+        "inputs": [
+          { "Type": ["Lammps"] }
+        ],
+        "outputs": [
+          { "Type": ["Lammps"], "Format": ["pyiron_atomistics.lammps.lammps.Lammps"] }
+        ],
+        "implementation": { "code": "job.run(delete_existing_job=True)\n" }
+      },
+      {
+        "label": "run_job_murn",
+        "id": "run_job_murn",
+        "taxonomyOperations": ["RunMurnaghanJob"],
+        "inputs": [
+          { "Type": ["Murnaghan"] }
+        ],
+        "outputs": [
+          { "Type": ["Murnaghan"], "Format": ["pyiron_atomistics.atomistics.master.murnaghan.Murnaghan"] }
+        ],
+        "implementation": { "code": "murn.run(delete_existing_job=True)\n" }
+      },
+      {
+        "label": "calc_md",
+        "id": "calc_md",
+        "taxonomyOperations": ["CalcMD"],
+        "inputs": [
+          { "Type": ["Lammps"] }
+        ],
+        "outputs": [
+          { "Type": ["Lammps"], "Format": ["pyiron_atomistics.lammps.lammps.Lammps"] }
+        ],
+        "implementation": { "code": "job.calc_md(temperature=800, pressure=0, n_ionic_steps=10000)\n" }
+      },
+      {
+        "label": "select_potential",
+        "id": "select_potential",
+        "taxonomyOperations": ["SelectPotential"],
+        "inputs": [
+          { "Type": ["Lammps"] }
+        ],
+        "outputs": [
+          { "Type": ["Lammps"], "Format": ["pyiron_atomistics.lammps.lammps.Lammps"] }
+        ],
+        "implementation": { "code": "job.potential = 'insert potential'\n" }
+      },
+      {
+        "label": "run_vasp",
+        "id": "run_vasp",
+        "taxonomyOperations": ["RunVasp"],
+        "inputs": [
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["Energy"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "run_sphinx",
+        "id": "run_sphinx",
+        "taxonomyOperations": ["RunSphinx"],
+        "inputs": [
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["Energy"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "run_gpaw",
+        "id": "run_gpaw",
+        "taxonomyOperations": ["RunGpaw"],
+        "inputs": [
+          { "Type": ["Structure"] }
+        ],
+        "outputs": [
+          { "Type": ["Energy"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "calculate_defect_formation_energy",
+        "id": "calculate_defect_formation_energy",
+        "taxonomyOperations": ["CalculateDefectFormationEnergy"],
+        "inputs": [
+          { "Type": ["Energy"] },
+          { "Type": ["Energy"] }
+        ],
+        "outputs": [
+          { "Type": ["DefectFormationEnergy"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "calc_defect_concentration",
+        "id": "calc_defect_concentration",
+        "taxonomyOperations": ["CalculateDefectConcentration"],
+        "inputs": [
+          { "Type": ["DefectFormationEnergy"], "Format": ["Float"] },
+          { "Type": ["ChemicalPotential"], "Format": ["Float"] }
+        ],
+        "outputs": [
+          { "Type": ["DefectConcentration"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "calc_chemical_potential_A",
+        "id": "calc_chemical_potential_A",
+        "taxonomyOperations": ["CalcChemicalPotentialA"],
+        "inputs": [
+          { "Type": ["Material"] }
+        ],
+        "outputs": [
+          { "Type": ["ChemicalPotential"], "Format": ["Float"] }
+        ],
+        "implementation": { }
+      },
+      {
+        "label": "calc_chemical_potential_B",
+        "id": "calc_chemical_potential_B",
+        "taxonomyOperations": ["CalcChemicalPotentialB"],
+        "inputs": [
+          { "Type": ["ChemicalPotential"] },
+          { "Type": ["Material"] }
+        ],
+        "outputs": [
+          { "Type": ["ChemicalPotential"], "Format": ["Float"] }
+        ],
+        "implementation": { "code": "" }
+      },
+      {
+        "label": "get_property_bulkmodulus",
+        "id": "get_property_bulkmodulus",
+        "taxonomyOperations": ["GetBulkModulus"],
+        "inputs": [
+          { "Type": ["Murnaghan"] }
+        ],
+        "outputs": [
+          { "Type": ["BulkModulus"], "Format": ["Float"] }
+        ],
+        "implementation": { "code": "print(pr['murn']['output/equilibrium_bulk_modulus'])\nEOF\n" }
+      },
+      {
+        "label": "get_output_MD",
+        "id": "get_output_MD",
+        "taxonomyOperations": ["GetMDOutput"],
+        "inputs": [
+          { "Type": ["Lammps"] }
+        ],
+        "outputs": [
+          { "Type": ["MolecularDynamicsOutput"], "Format": ["Array"] }
+        ],
+        "implementation": { "code": "print(job['output/generic/temperature'])\nEOF\n" }
+      }
+    ]
+ }

@@ -11,5 +11,10 @@ public enum SolverType {
     /**
      * SAT solver will be used.
      */
-    SAT
+    SAT,
+    
+    /**
+     * Clingo ASP solver will be used.
+     */
+    CLINGO
 }

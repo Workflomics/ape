@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/materials_science/"
+     xml:base="http://www.semanticweb.org/materials_science/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/materials_science"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Aluminium">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Material"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#AluminiumPotential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#LammpsPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Array">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Bulk">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Structure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#BulkModulus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MaterialProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CalcChemicalPotentialA">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CalcChemicalPotentialB">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CalcMD">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ConfigureJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CalculateDefectConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CalculateDefectFormationEnergy">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#ChemicalPotential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MaterialProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#ConfigureJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#ConfigureStructure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Coordinates">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateAntisite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateDefect"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateAntisiteAl">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateAntisite"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateAntisiteFe">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateAntisite"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateDefect">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ConfigureStructure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJobGpaw">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJobLammps">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJobMurnaghan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJobSphinx">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateJobVasp">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateProject">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateStructure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateStructureBulk">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateStructure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateStructureSlab">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateStructure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateVacancy">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateDefect"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateVacancyAl">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateVacancy"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#CreateVacancyFe">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#CreateVacancy"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#DFT">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Engine"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Data"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#DefectConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MaterialProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#DefectFormationEnergy">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MaterialProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Energy">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MaterialProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Engine">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#EngineFormat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#FeAl">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Material"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Float">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Value"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Format">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Data"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#GPAW">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#DFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#GetBulkModulus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetProperty"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#GetMDOutput">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#GetOutput"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#GetOutput">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#GetProperty">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Iron">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Material"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#IronPotential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#LammpsPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Lammps">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Engine"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#LammpsPotential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Potential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Material">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#MaterialProperty">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#MolecularDynamicsOutput">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Murnaghan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#MurnaghanFormat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Plot">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#PlotFormat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#PlotStructure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Plotting"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Plotting">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Position">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Potential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Project">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#ProjectFormat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RelaxStructure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ConfigureStructure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunDFT">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunGpaw">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunDFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Tool"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunLammpsJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunMurnaghanJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunSphinx">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunDFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#RunVasp">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#RunDFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#SelectPotential">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ConfigureJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#SetReferenceJob">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ConfigureJob"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Slab">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Structure"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Sphinx">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#DFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#String">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Structure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Type"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#StructureFormat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Tool"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Type">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Data"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#VASP">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#DFT"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#Value">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Format"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.atomistics.master.murnaghan.Murnaghan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#MurnaghanFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.atomistics.structure.atoms.Atoms">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#StructureFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.gpaw.gpaw.Gpaw">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#EngineFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.lammps.lammps.Lammps">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#EngineFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.project.Project">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#ProjectFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.sphinx.sphinx.Sphinx">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#EngineFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#pyiron_atomistics.vasp.vasp.Vasp">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#EngineFormat"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#AluminiumPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#1996--Farkas-D--Nb-Ti-Al--LAMMPS--ipr1">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#AluminiumPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#1997--Ackland-G-J--Fe--LAMMPS--ipr1">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#IronPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#1998--Meyer-R--Fe--LAMMPS--ipr1">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#IronPotential"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/materials_science#3dPlot">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/materials_science#Plot"/>
+    </owl:Class>
+</rdf:RDF>

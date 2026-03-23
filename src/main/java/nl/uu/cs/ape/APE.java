@@ -302,8 +302,12 @@ public class APE implements APEInterface {
 				&& solutionLength <= runConfig.getSolutionLength().getMax()
 				&& APEUtils.timerTimeLeft(globalTimerID, runConfig.getTimeoutMs()) > 0) {
 
-			SynthesisEngine implSynthesis = new SATSynthesisEngine(apeDomainSetup, allSolutions, runConfig,
-					solutionLength);
+			SynthesisEngine implSynthesis;
+			if (runConfig.getSolverType() == nl.uu.cs.ape.models.enums.SolverType.CLINGO) {
+				implSynthesis = new nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine(apeDomainSetup, allSolutions, runConfig, solutionLength);
+			} else {
+				implSynthesis = new SATSynthesisEngine(apeDomainSetup, allSolutions, runConfig, solutionLength);
+			}
 
 			APEUtils.printHeader(implSynthesis.getSolutionSize(), "Workflow discovery - length");
 

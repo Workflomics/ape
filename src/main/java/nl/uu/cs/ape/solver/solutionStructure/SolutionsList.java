@@ -69,10 +69,10 @@ public class SolutionsList {
         /*
          * Provides mapping from each atom/predicate to a number/string, and vice versa
          */
-        if (runConfig.getSolverType() == SolverType.SAT) {
+        if (runConfig.getSolverType() == SolverType.SAT || runConfig.getSolverType() == SolverType.CLINGO) {
             this.mappings = new SATAtomMappings();
         } else {
-            throw new APEConfigException("Solver type has to be SAT.");
+            throw new APEConfigException("Solver type has to be SAT or CLINGO.");
         }
         /* Variables defining the current and maximum lengths and solutions count. */
         this.maxSolutions = runConfig.getMaxNoSolutions();

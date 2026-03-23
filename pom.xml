@@ -244,6 +244,12 @@
 			<artifactId>org.sat4j.core</artifactId>
 			<version>2.3.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.potassco/clingo -->
+		<dependency>
+			<groupId>org.potassco</groupId>
+			<artifactId>clingo</artifactId>
+			<version>5.8.0.1</version>
+		</dependency>
 
         <!-- Test dependencies -->
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->

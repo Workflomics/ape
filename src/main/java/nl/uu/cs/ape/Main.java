@@ -159,6 +159,19 @@ public class Main {
     public static void executeSynthesis(String[] args) {
         String path;
         int solutionsNo = -1;
+        nl.uu.cs.ape.models.enums.SolverType solverType = nl.uu.cs.ape.models.enums.SolverType.CLINGO;
+
+        java.util.List<String> parsedArgs = new java.util.ArrayList<>();
+        for (String arg : args) {
+            if (arg.equals("--clingo") || arg.equals("--solver=clingo")) {
+                solverType = nl.uu.cs.ape.models.enums.SolverType.CLINGO;
+            } else if (arg.equals("--sat") || arg.equals("--solver=sat")) {
+                solverType = nl.uu.cs.ape.models.enums.SolverType.SAT;
+            } else {
+                parsedArgs.add(arg);
+            }
+        }
+        args = parsedArgs.toArray(new String[0]);
 
         if (args.length > 2) {
             log.error("Error: synthesis method expects at most two additional arguments.");
@@ -199,6 +212,7 @@ public class Main {
 
             JSONObject runConfigJson = APEFiles.readFileToJSONObject(new File(path));
             APERunConfig runConfig = new APERunConfig(runConfigJson, apeFramework.getDomainSetup());
+            runConfig.setSolverType(solverType);
 
             if (solutionsNo > 0) {
                 runConfig.setMaxNoSolutions(solutionsNo);

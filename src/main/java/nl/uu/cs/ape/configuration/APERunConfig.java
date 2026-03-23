@@ -169,7 +169,7 @@ public class APERunConfig {
     private APEDomainSetup apeDomainSetup;
 
     /** Solver type that should be used (SAT). */
-    private SolverType solverType = SolverType.SAT;
+    private SolverType solverType = SolverType.CLINGO;
 
     /**
      * Constructor used to implement the Builder Pattern.

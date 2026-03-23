@@ -1,3 +1,13 @@
+### APE 3.0.0 - Clingo Solver Choice WIP
+
+- Added Solver Choice
+  - Support for `clingo` ASP solver integration using `jclingo`
+  - Clingo set as the default solver
+  - New `ClingoSynthesisEngine` for logic solving via ASP
+  - CLI extended with `--clingo` and `--solver=clingo` flags
+  - Added MaterialScience clingo example and test cases
+    - mvn clean test -Dtest=ClingoUseCaseTest
+
 ### APE 2.6.0 - Snakemake, Partial Workflows and Major Refactorings
 
 - Maven Group change to `org.workflomics`

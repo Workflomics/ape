@@ -1,0 +1,99 @@
+{
+  "constraints": [
+    {
+      "constraintid": "SLTLx",
+      "description": "We have to use 'CreateProject' as the first tool and can not use it subsequently",
+      "formula": "Exists (?x) (<'CreateProject'(;?x)> (!F Exists (?y) (<'CreateProject'(;?y)> true)))"
+    },
+    {
+      "constraintid": "depend_m",
+      "parameters": [
+        { "Tool" : ["CalculateDefectFormationEnergy"]},
+        { "Tool" : ["RelaxStructure"]}
+      ]
+    },
+    {
+      "constraintid": "depend_m",
+      "parameters": [
+        { "Tool" : ["CalculateDefectFormationEnergy"]},
+        { "Tool" : ["CreateDefect"]}
+      ]
+    },
+    {
+      "constraintid": "depend_m",
+      "parameters": [
+        { "Tool" : ["RelaxStructure"]},
+        { "Tool" : ["CreateDefect"]}
+      ]
+    },
+    {
+      "constraintid": "itn_m",
+      "parameters": [
+        { "Tool" : ["CreateStructure"]},
+        { "Tool" : ["CreateStructure"]}
+      ]
+    }
+    ,{
+      "constraintid": "itn_m",
+      "parameters": [
+        { "Tool" : ["CalcChemicalPotentialA"]},
+        { "Tool" : ["CalcChemicalPotentialA"]}
+      ]
+    },
+    {
+      "constraintid": "itn_m",
+      "parameters": [
+        { "Tool" : ["CalcChemicalPotentialB"]},
+        { "Tool" : ["CalcChemicalPotentialB"]}
+      ]
+    },
+    {
+      "constraintid": "unique_inputs",
+      "parameters": [
+        { "Tool" : ["CalculateDefectFormationEnergy"]}
+      ]
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "If the tool 'CreateDefect' is used, we eventually have to use 'RelaxStructure' afterwards",
+      "formula": "G ((<'CreateDefect'(;)> true) -> (F <'RelaxStructure'(;)> true))"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "If we use the tool 'CreateAntisite', we have to use 'CalcChemicalPotentialB'",
+      "formula": " (F <'CreateAntisite'(;)> true) <-> (F <'CalcChemicalPotentialB'(;)> true)"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "We can not use 'CreateDefect' more than two times",
+      "formula": "G ! <'CreateDefect'(;)> F <'CreateDefect'(;)> F <'CreateDefect'(;)> true"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "We have to use the same DFT method for all computations",
+      "formula": "(F <'RunVasp'(;)> true) -> !(F <'RunSphinx'(;)> true | F <'RunGpaw'(;)> true)"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "We have to use the same DFT method for all computations",
+      "formula": "(F <'RunSphinx'(;)> true) -> !(F <'RunVasp'(;)> true | F <'RunGpaw'(;)> true)"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "We have to use the same DFT method for all computations",
+      "formula": "(F <'RunGpaw'(;)> true) -> !(F <'RunSphinx'(;)> true | F <'RunVasp'(;)> true)"
+    },
+    {
+      "constraintid": "SLTLx",
+      "description": "We can not use 'RelaxStructure' two times in a row",
+      "formula": "G ! (<'RelaxStructure'(;)> <'RelaxStructure'(;)> true)"
+    },
+    {
+      "constraintid": "connected_op",
+      "parameters": [
+        { "Tool" : ["CreateStructureBulk"]},
+        { "Tool" : ["RunDFT"]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "ontology_path": "./MaterialsScience_taxonomy.owl",
+  "ontologyPrefixIRI": "http://www.semanticweb.org/materials_science#",
+  "toolsTaxonomyRoot": "Tool",
+  "dataDimensionsTaxonomyRoots": [
+    "Type",
+    "Format"
+  ],
+  "tool_annotations_path": "./tool_annotations.json",
+  "strict_tool_annotations": "false",
+  "constraints_path": "./defect_concentration/constraints.json",
+  "timeout_sec": "300",
+  "solutions_dir_path": "./defect_concentration/solution/",
+  "solution_length": {
+    "min": 1,
+    "max": 12
+  },
+  "solutions": "1000",
+  "number_of_execution_scripts": "3",
+  "number_of_generated_graphs": "30",
+  "number_of_cwl_files": "0",
+  "tool_seq_repeat": "false",
+  "inputs": [ { "Type": ["FeAl"], "Format": ["String"] }, { "Type": ["Position"], "Format": ["Coordinates"]} ],
+  "outputs": [
+    { "Type": ["DefectConcentration"], "Format": ["Float"] }
+  ],
+  "debug_mode": "true",
+  "use_workflow_input": "all",
+  "use_all_generated_data": "one"
+}
