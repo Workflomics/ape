@@ -106,6 +106,14 @@ public class APERunConfig {
      */
     private final APEConfigTag<Boolean> TOOL_SEQ_REPEAT = new APEConfigTagFactory.TAGS.TOOL_SEQ_REPEAT();
     /**
+     * Mode is true if benchmark metrics should be written to benchmark.csv.
+     */
+    private final APEConfigTag<Boolean> BENCHMARK_MODE = new APEConfigTagFactory.TAGS.BENCHMARK_MODE();
+    /**
+     * Mode is true if Clingo debug files should be written.
+     */
+    private final APEConfigTag<Boolean> CLINGO_DEBUG_MODE = new APEConfigTagFactory.TAGS.CLINGO_DEBUG_MODE();
+    /**
      * Path to the directory containing custom clingo encoding files.
      */
     private final APEConfigTag<Path> CLINGO_ENCODINGS_PATH = new APEConfigTagFactory.TAGS.CLINGO_ENCODINGS_PATH();
@@ -139,6 +147,8 @@ public class APERunConfig {
             this.DEBUG_MODE,
             this.TIMEOUT_SEC,
             this.TOOL_SEQ_REPEAT,
+            this.BENCHMARK_MODE,
+            this.CLINGO_DEBUG_MODE,
             this.CLINGO_ENCODINGS_PATH,
             this.PROGRAM_OUTPUTS,
             this.PROGRAM_INPUTS
@@ -164,6 +174,8 @@ public class APERunConfig {
             new DEBUG_MODE(),
             new TIMEOUT_SEC(),
             new TOOL_SEQ_REPEAT(),
+            new BENCHMARK_MODE(),
+            new CLINGO_DEBUG_MODE(),
             new CLINGO_ENCODINGS_PATH(),
             new PROGRAM_OUTPUTS(null),
             new PROGRAM_INPUTS(null));
@@ -637,6 +649,38 @@ public class APERunConfig {
      */
     public void setDebugMode(boolean debugMode) {
         DEBUG_MODE.setValue(debugMode);
+    }
+
+    /**
+     * Gets benchmark mode.
+     *
+     * @return the value of {@link #BENCHMARK_MODE}
+     */
+    public boolean getBenchmarkMode() {
+        return BENCHMARK_MODE.getValue();
+    }
+
+    /**
+     * @param benchmarkMode the benchmarkMode to set
+     */
+    public void setBenchmarkMode(boolean benchmarkMode) {
+        BENCHMARK_MODE.setValue(benchmarkMode);
+    }
+
+    /**
+     * Gets Clingo debug mode.
+     *
+     * @return the value of {@link #CLINGO_DEBUG_MODE}
+     */
+    public boolean getClingoDebugMode() {
+        return CLINGO_DEBUG_MODE.getValue();
+    }
+
+    /**
+     * @param clingoDebugMode the clingoDebugMode to set
+     */
+    public void setClingoDebugMode(boolean clingoDebugMode) {
+        CLINGO_DEBUG_MODE.setValue(clingoDebugMode);
     }
 
     /**

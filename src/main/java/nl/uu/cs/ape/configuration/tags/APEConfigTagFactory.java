@@ -1132,6 +1132,58 @@ public class APEConfigTagFactory {
         /**
          * Configuration field.
          */
+        public static class BENCHMARK_MODE extends TYPES.Bool {
+
+            @Override
+            public String getTagName() {
+                return "benchmark_mode";
+            }
+
+            @Override
+            public String getLabel() {
+                return "Benchmark mode";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Tag to indicate whether benchmark metrics (timing and memory) should be written to benchmark.csv.";
+            }
+
+            @Override
+            public APEConfigDefaultValue<Boolean> getDefault() {
+                return APEConfigDefaultValue.withDefault(false);
+            }
+        }
+
+        /**
+         * Configuration field.
+         */
+        public static class CLINGO_DEBUG_MODE extends TYPES.Bool {
+
+            @Override
+            public String getTagName() {
+                return "clingo_debug_mode";
+            }
+
+            @Override
+            public String getLabel() {
+                return "Clingo debug mode";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Tag to indicate whether Clingo debug files (facts and results per length) should be written.";
+            }
+
+            @Override
+            public APEConfigDefaultValue<Boolean> getDefault() {
+                return APEConfigDefaultValue.withDefault(false);
+            }
+        }
+
+        /**
+         * Configuration field.
+         */
         public static class CLINGO_ENCODINGS_PATH extends TYPES.Directory {
 
             @Override

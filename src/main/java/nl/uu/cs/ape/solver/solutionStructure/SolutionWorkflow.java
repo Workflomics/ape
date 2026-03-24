@@ -17,6 +17,7 @@ import nl.uu.cs.ape.solver.SolutionInterpreter;
 import nl.uu.cs.ape.solver.minisat.SATOutput;
 import nl.uu.cs.ape.solver.minisat.SATSynthesisEngine;
 import nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine;
+import nl.uu.cs.ape.solver.solutionStructure.graphviz.ClingoSolutionGraphFactory;
 import nl.uu.cs.ape.solver.solutionStructure.graphviz.SolutionGraph;
 import nl.uu.cs.ape.solver.solutionStructure.graphviz.SolutionGraphFactory;
 import nl.uu.cs.ape.models.enums.AtomType;
@@ -27,7 +28,6 @@ import org.potassco.clingo.symbol.Function;
 import org.potassco.clingo.symbol.Number;
 import org.potassco.clingo.symbol.Text;
 import org.potassco.clingo.control.ShowType;
-import nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,6 +126,13 @@ public class SolutionWorkflow {
      */
     @Getter(lazy = true)
     private final String readableSolution = SolutionGraphFactory.generateReadableSolution(this);
+
+    /**
+     * True when this workflow was constructed from a Clingo model; controls which
+     * graph factory is used in {@link #getDataflowGraph}, {@link #getControlflowGraph},
+     * and {@link #getTavernaStyleGraph}.
+     */
+    private boolean isClingoSolution = false;
 
     /**
      * Index of the solution.
@@ -273,6 +280,7 @@ public class SolutionWorkflow {
     public SolutionWorkflow(Model clingoModel, ClingoSynthesisEngine synthesisInstance) {
         /* Call for the default constructor. */
         this(synthesisInstance.getModuleAutomaton(), synthesisInstance.getTypeAutomaton());
+        this.isClingoSolution = true;
 
         this.nativeSolution = new SolutionInterpreter() {
             @Override
@@ -301,114 +309,75 @@ public class SolutionWorkflow {
             public boolean isSat() { return true; }
         };
 
-        Map<String, TypeNode> clingoDataToTypeNode = new HashMap<>();
-        for(int i = 0; i < this.workflowInputTypeStates.size(); i++) {
-            clingoDataToTypeNode.put("wf_input_" + i, this.workflowInputTypeStates.get(i));
-        }
+        // Single pass — one getSymbols() JNA call, no string-keyed HashMap, no JNA toString() calls.
+        // Parsed predicates (from show.lp + step.lp aux helpers):
+        //   tool_at_time(T, Tool)    — which tool runs at step T
+        //   ape_bind(T, Port, WF)    — input binding at step T: Port uses WF
+        //   ape_holds_dim(WF, V, Cat)— type annotation: WF has value V in category Cat
+        //   ape_goal_out(T, GoalID, WF) — workflow output: goal GoalID satisfied by WF
+        Symbol[] symbols = clingoModel.getSymbols(ShowType.shown());
+        for (Symbol symbol : symbols) {
+            if (!(symbol instanceof Function)) continue;
+            Function f = (Function) symbol;
+            String fname = f.getName();
+            Symbol[] args = f.getArguments();
 
-        // Pass 1: Modules and Type allocations
-        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
-            if (symbol instanceof Function && ((Function) symbol).getName().equals("occurs")) {
-                Symbol[] args = ((Function) symbol).getArguments();
+            if ("tool_at_time".equals(fname)) {
+                // args = [T, Tool]
                 int time = ((Number) args[0]).getNumber();
-                Symbol action = args[1];
-                if (action instanceof Function && ((Function) action).getName().equals("run")) {
-                    String toolId = ((Function) action).getArguments()[0] instanceof Text ? ((Text) ((Function) action).getArguments()[0]).getText() : ((Function) action).getArguments()[0].toString();
+                String toolId = args[1] instanceof Text ? ((Text) args[1]).getText() : args[1].toString();
+                if (time >= 1 && time <= this.moduleNodes.size()) {
                     ModuleNode moduleNode = this.moduleNodes.get(time - 1);
-                    nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate toolPred = synthesisInstance.getDomainSetup().getAllModules().get(toolId);
+                    nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate toolPred =
+                            synthesisInstance.getDomainSetup().getAllModules().get(toolId);
                     if (toolPred instanceof nl.uu.cs.ape.models.Module) {
                         moduleNode.setUsedModule((nl.uu.cs.ape.models.Module) toolPred);
                     } else if (toolPred instanceof nl.uu.cs.ape.models.AbstractModule) {
                         moduleNode.addAbstractDescriptionOfUsedType((nl.uu.cs.ape.models.AbstractModule) toolPred);
                     }
                 }
-            } else if (symbol instanceof Function && ((Function) symbol).getName().equals("holds")) {
-                Symbol[] args = ((Function) symbol).getArguments();
-                Symbol fluent = args[1];
-                if (fluent instanceof Function && ((Function) fluent).getName().equals("dim")) {
-                    Symbol[] dimArgs = ((Function) fluent).getArguments();
-                    String dataId = symbolToKey(dimArgs[0]);
-                    if (dataId.startsWith("out(")) {
-                        int stepTime = ((Number) ((Function) dimArgs[0]).getArguments()[0]).getNumber();
-                        ModuleNode creator = this.moduleNodes.get(stepTime - 1);
-                        String portId = ((Function) dimArgs[0]).getArguments()[2] instanceof Text ? ((Text) ((Function) dimArgs[0]).getArguments()[2]).getText() : ((Function) dimArgs[0]).getArguments()[2].toString();
-                        int outIndex = 0;
-                        try {
-                            String[] parts = portId.split("_out_");
-                            if (parts.length > 1) {
-                                outIndex = Integer.parseInt(parts[1].split("_port_")[0]);
-                            }
-                        } catch(Exception e) {}
-                        
-                        if (outIndex < creator.getOutputTypes().size()) {
-                            clingoDataToTypeNode.put(dataId, creator.getOutputTypes().get(outIndex));
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Pass 2: TypeNode attributes
-        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
-            if (symbol instanceof Function && ((Function) symbol).getName().equals("holds")) {
-                Symbol[] args = ((Function) symbol).getArguments();
-                Symbol fluent = args[1];
-                if (fluent instanceof Function && ((Function) fluent).getName().equals("dim")) {
-                    Symbol[] dimArgs = ((Function) fluent).getArguments();
-                    String dataId = symbolToKey(dimArgs[0]);
-                    String valueId = dimArgs[1] instanceof Text ? ((Text) dimArgs[1]).getText() : dimArgs[1].toString();
-                    TypeNode typeNode = clingoDataToTypeNode.get(dataId);
-                    if (typeNode != null) {
-                        nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate typePred = synthesisInstance.getDomainSetup().getAllTypes().get(valueId);
-                        if (typePred instanceof Type) {
-                            if (((Type) typePred).isNodeType(NodeType.LEAF) || ((Type) typePred).isNodeType(NodeType.EMPTY_LABEL)) {
-                                typeNode.addUsedType((Type) typePred);
-                            } else {
-                                typeNode.addAbstractDescriptionOfUsedType((Type) typePred);
-                            }
-                        }
-                    }
-                }
-            } else if (symbol instanceof Function && ((Function) symbol).getName().equals("goal_satisfied_by")) {
-                Symbol[] goalArgs = ((Function) symbol).getArguments();
-                int goalId = ((Number) goalArgs[1]).getNumber();
-                String dataId = symbolToKey(goalArgs[2]);
-                TypeNode memoryTypeNode = clingoDataToTypeNode.get(dataId);
-                if (memoryTypeNode != null) {
-                    APEUtils.safeSet(this.workflowOutputTypeStates, goalId, memoryTypeNode);
-                }
-            }
-        }
-        
-        // Pass 3: Bindings
-        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
-            if (symbol instanceof Function && ((Function) symbol).getName().equals("occurs")) {
-                Symbol[] args = ((Function) symbol).getArguments();
+
+            } else if ("ape_bind".equals(fname)) {
+                // args = [T, Port, WF]
                 int time = ((Number) args[0]).getNumber();
-                Symbol action = args[1];
-                if (action instanceof Function && ((Function) action).getName().equals("bind")) {
-                    Symbol[] bindArgs = ((Function) action).getArguments();
-                    String portId = bindArgs[1] instanceof Text ? ((Text) bindArgs[1]).getText() : bindArgs[1].toString();
-                    String dataId = symbolToKey(bindArgs[2]);
-                    
+                String portId = args[1] instanceof Text ? ((Text) args[1]).getText() : args[1].toString();
+                TypeNode typeNode = typeNodeForWF(args[2]);
+                if (typeNode != null && time >= 1 && time <= this.moduleNodes.size()) {
+                    int inIndex = parseLastIndex(portId, "_p");
                     ModuleNode moduleNode = this.moduleNodes.get(time - 1);
-                    int inIndex = 0;
-                    try {
-                        String[] parts = portId.split("_in_");
-                        if (parts.length > 1) {
-                            inIndex = Integer.parseInt(parts[1].split("_port_")[0]);
+                    moduleNode.setInputType(inIndex, typeNode);
+                    typeNode.addUsedByTool(moduleNode);
+                }
+
+            } else if ("ape_holds_dim".equals(fname)) {
+                // args = [WF, Value, Category]
+                // For workflow inputs: WF is a Text ("wf_input_N"), emitted as base facts.
+                // For tool outputs: WF is out(T, Tool, Port), derived in step.lp only at creation step T.
+                String valueId = args[1] instanceof Text ? ((Text) args[1]).getText() : args[1].toString();
+                TypeNode typeNode = typeNodeForWF(args[0]);
+                if (typeNode != null) {
+                    nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate typePred =
+                            synthesisInstance.getDomainSetup().getAllTypes().get(valueId);
+                    if (typePred instanceof Type) {
+                        if (((Type) typePred).isNodeType(NodeType.LEAF)
+                                || ((Type) typePred).isNodeType(NodeType.EMPTY_LABEL)) {
+                            typeNode.addUsedType((Type) typePred);
+                        } else {
+                            typeNode.addAbstractDescriptionOfUsedType((Type) typePred);
                         }
-                    } catch(Exception e) {}
-                    
-                    TypeNode memoryTypeNode = clingoDataToTypeNode.get(dataId);
-                    if (memoryTypeNode != null) {
-                        moduleNode.setInputType(inIndex, memoryTypeNode);
-                        memoryTypeNode.addUsedByTool(moduleNode);
                     }
+                }
+
+            } else if ("ape_goal_out".equals(fname)) {
+                // args = [T, GoalID, WF]  (T included to avoid Clingo redefinition)
+                int goalId = ((Number) args[1]).getNumber();
+                TypeNode typeNode = typeNodeForWF(args[2]);
+                if (typeNode != null) {
+                    APEUtils.safeSet(this.workflowOutputTypeStates, goalId, typeNode);
                 }
             }
         }
-        
+
         /* Remove empty elements of the sets. */
         this.moduleNodes.removeIf(ModuleNode::isEmpty);
         this.workflowInputTypeStates.removeIf(TypeNode::isEmpty);
@@ -416,11 +385,49 @@ public class SolutionWorkflow {
     }
 
     /**
-     * Convert a Clingo Symbol to a string key suitable for map lookups.
-     * Text symbols return the unquoted string; all others use their native toString().
+     * Resolve a Clingo WF symbol to its corresponding TypeNode without any JNA calls.
+     * <ul>
+     *   <li>{@code "wf_input_N"} (Text) → workflowInputTypeStates[N]</li>
+     *   <li>{@code out(T, Tool, Port)} (Function) → moduleNodes[T-1].outputTypes[outIndex]</li>
+     * </ul>
      */
-    private static String symbolToKey(Symbol s) {
-        return s instanceof Text ? ((Text) s).getText() : s.toString();
+    private TypeNode typeNodeForWF(Symbol wf) {
+        if (wf instanceof Text) {
+            String s = ((Text) wf).getText();
+            if (s.startsWith("wf_input_")) {
+                try {
+                    int idx = Integer.parseInt(s.substring("wf_input_".length()));
+                    return (idx < this.workflowInputTypeStates.size())
+                            ? this.workflowInputTypeStates.get(idx) : null;
+                } catch (NumberFormatException e) { return null; }
+            }
+        } else if (wf instanceof Function && "out".equals(((Function) wf).getName())) {
+            Symbol[] outArgs = ((Function) wf).getArguments();
+            int t = ((Number) outArgs[0]).getNumber();
+            if (t >= 1 && t <= this.moduleNodes.size()) {
+                String portId = outArgs[2] instanceof Text
+                        ? ((Text) outArgs[2]).getText() : outArgs[2].toString();
+                int outIndex = parseLastIndex(portId, "_out_");
+                ModuleNode creator = this.moduleNodes.get(t - 1);
+                return (outIndex < creator.getOutputTypes().size())
+                        ? creator.getOutputTypes().get(outIndex) : null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract the integer index that follows the last occurrence of {@code delimiter} in
+     * {@code s}, stopping at the next {@code _} or end-of-string.
+     * Returns 0 if the delimiter is absent or parsing fails.
+     */
+    private static int parseLastIndex(String s, String delimiter) {
+        int pos = s.lastIndexOf(delimiter);
+        if (pos < 0) return 0;
+        int start = pos + delimiter.length();
+        int end = s.indexOf('_', start);
+        String num = (end < 0) ? s.substring(start) : s.substring(start, end);
+        try { return Integer.parseInt(num); } catch (NumberFormatException e) { return 0; }
     }
 
     /**
@@ -434,7 +441,9 @@ public class SolutionWorkflow {
      */
     public SolutionGraph getDataflowGraph(String title, RankDir orientation) {
         if (this.dataflowGraph == null) {
-            this.dataflowGraph = SolutionGraphFactory.generateDataFlowGraph(this, title, orientation);
+            this.dataflowGraph = isClingoSolution
+                    ? ClingoSolutionGraphFactory.generateDataFlowGraph(this, title, orientation)
+                    : SolutionGraphFactory.generateDataFlowGraph(this, title, orientation);
         }
         return this.dataflowGraph;
     }
@@ -450,7 +459,9 @@ public class SolutionWorkflow {
      */
     public SolutionGraph getControlflowGraph(String title, RankDir orientation) {
         if (this.controlflowGraph == null) {
-            this.controlflowGraph = SolutionGraphFactory.generateControlflowGraph(this, title, orientation);
+            this.controlflowGraph = isClingoSolution
+                    ? ClingoSolutionGraphFactory.generateControlflowGraph(this, title, orientation)
+                    : SolutionGraphFactory.generateControlflowGraph(this, title, orientation);
         }
         return this.controlflowGraph;
     }
@@ -465,7 +476,9 @@ public class SolutionWorkflow {
      */
     public SolutionGraph getTavernaStyleGraph(String title) {
         if (this.tavernaStyleGraph == null) {
-            this.tavernaStyleGraph = SolutionGraphFactory.generateTavernaDesignGraph(this, title);
+            this.tavernaStyleGraph = isClingoSolution
+                    ? ClingoSolutionGraphFactory.generateTavernaDesignGraph(this, title)
+                    : SolutionGraphFactory.generateTavernaDesignGraph(this, title);
         }
         return this.tavernaStyleGraph;
     }

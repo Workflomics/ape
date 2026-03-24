@@ -295,34 +295,50 @@ public class APE implements APEInterface {
 		 * Loop over different lengths of the workflow until either, max workflow length
 		 * or max number of solutions has been found.
 		 */
+		// Reset per-run solver timers
+		if (runConfig.getSolverType() == nl.uu.cs.ape.models.enums.SolverType.CLINGO) {
+			nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine.resetTimers();
+		}
+
 		String globalTimerID = "globalTimer";
 		APEUtils.timerStart(globalTimerID, true);
 		int solutionLength = runConfig.getSolutionLength().getMin();
-		while (allSolutions.getNumberOfSolutions() < allSolutions.getMaxNumberOfSolutions()
-				&& solutionLength <= runConfig.getSolutionLength().getMax()
-				&& APEUtils.timerTimeLeft(globalTimerID, runConfig.getTimeoutMs()) > 0) {
 
-			SynthesisEngine implSynthesis;
-			if (runConfig.getSolverType() == nl.uu.cs.ape.models.enums.SolverType.CLINGO) {
-				implSynthesis = new nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine(apeDomainSetup, allSolutions, runConfig, solutionLength);
-			} else {
-				implSynthesis = new SATSynthesisEngine(apeDomainSetup, allSolutions, runConfig, solutionLength);
-			}
-
-			APEUtils.printHeader(implSynthesis.getSolutionSize(), "Workflow discovery - length");
-
-			/* Encoding of the synthesis problem */
-			if (!implSynthesis.synthesisEncoding()) {
+		if (runConfig.getSolverType() == nl.uu.cs.ape.models.enums.SolverType.CLINGO) {
+			// Multi-shot Clingo: one engine handles all lengths internally.
+			nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine clingoEngine =
+				new nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine(
+					apeDomainSetup, allSolutions, runConfig,
+					runConfig.getSolutionLength().getMax());
+			if (!clingoEngine.synthesisEncoding()) {
 				log.error("Internal error in problem encoding.");
 				return null;
 			}
-			/* Execution of the synthesis - updates the object allSolutions */
-			allSolutions.addSolutions(implSynthesis.synthesisExecution());
-			implSynthesis.deleteTempFiles();
-			allSolutions.addNoSolutionsForLength(solutionLength, allSolutions.getNumberOfSolutions());
+			clingoEngine.synthesisExecution();
+			clingoEngine.deleteTempFiles();
+			solutionLength = runConfig.getSolutionLength().getMax() + 1;
+		} else {
+			while (allSolutions.getNumberOfSolutions() < allSolutions.getMaxNumberOfSolutions()
+					&& solutionLength <= runConfig.getSolutionLength().getMax()
+					&& APEUtils.timerTimeLeft(globalTimerID, runConfig.getTimeoutMs()) > 0) {
 
-			/* Increase the size of the workflow for the next depth iteration */
-			solutionLength++;
+				SynthesisEngine implSynthesis = new SATSynthesisEngine(apeDomainSetup, allSolutions, runConfig, solutionLength);
+
+				APEUtils.printHeader(implSynthesis.getSolutionSize(), "Workflow discovery - length");
+
+				/* Encoding of the synthesis problem */
+				if (!implSynthesis.synthesisEncoding()) {
+					log.error("Internal error in problem encoding.");
+					return null;
+				}
+				/* Execution of the synthesis - updates the object allSolutions */
+				allSolutions.addSolutions(implSynthesis.synthesisExecution());
+				implSynthesis.deleteTempFiles();
+				allSolutions.addNoSolutionsForLength(solutionLength, allSolutions.getNumberOfSolutions());
+
+				/* Increase the size of the workflow for the next depth iteration */
+				solutionLength++;
+			}
 		}
 
 		if ((allSolutions.getNumberOfSolutions() >= allSolutions.getMaxNumberOfSolutions() - 1)) {
@@ -338,7 +354,8 @@ public class APE implements APEInterface {
 		}
 
 		log.info(allSolutions.getFlag().getMessage());
-		long runTimeMS = APEUtils.timerPrintSolutions(globalTimerID, allSolutions.getNumberOfSolutions());
+		long runTimeMS = APEUtils.timerPrintSolutions(globalTimerID, allSolutions.getNumberOfSolutions(),
+				runConfig.getSolverType());
 
 		allSolutions.setSolvingTime(runTimeMS);
 		return allSolutions;

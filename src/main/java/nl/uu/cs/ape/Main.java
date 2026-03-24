@@ -162,6 +162,8 @@ public class Main {
         nl.uu.cs.ape.models.enums.SolverType solverType = nl.uu.cs.ape.models.enums.SolverType.SAT;
         String clingoEncodingsPath = null;
 
+        boolean clingoDebug = false;
+        boolean benchmark = false;
         java.util.List<String> parsedArgs = new java.util.ArrayList<>();
         for (String arg : args) {
             if (arg.equals("--clingo") || arg.equals("--solver=clingo")) {
@@ -170,6 +172,10 @@ public class Main {
                 solverType = nl.uu.cs.ape.models.enums.SolverType.SAT;
             } else if (arg.startsWith("--clingo-encodings=")) {
                 clingoEncodingsPath = arg.substring("--clingo-encodings=".length());
+            } else if (arg.equals("--clingo-debug")) {
+                clingoDebug = true;
+            } else if (arg.equals("--benchmark")) {
+                benchmark = true;
             } else {
                 parsedArgs.add(arg);
             }
@@ -219,6 +225,12 @@ public class Main {
             }
             APERunConfig runConfig = new APERunConfig(runConfigJson, apeFramework.getDomainSetup());
             runConfig.setSolverType(solverType);
+            if (clingoDebug) {
+                runConfig.setClingoDebugMode(true);
+            }
+            if (benchmark) {
+                runConfig.setBenchmarkMode(true);
+            }
 
             if (solutionsNo > 0) {
                 runConfig.setMaxNoSolutions(solutionsNo);

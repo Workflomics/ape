@@ -8,6 +8,25 @@
   - Added MaterialScience clingo example and test cases
     - mvn clean test -Dtest=ClingoUseCaseTest
 
+- Clingo solution extraction via auxiliary predicates
+  - Introduced `ape_extract.lp` — a dedicated encoding that defines four per-timestep helper predicates (`tool_at_time/2`, `ape_bind/3`, `ape_holds_dim/3`, `ape_goal_out/3`) with inline `#show` directives
+  - Removed `show.lp`; extraction predicates and their `#show` directives now co-located in `ape_extract.lp`
+  - `SolutionWorkflow` Clingo constructor updated to parse the helper atoms from `model.getSymbols(ShowType.shown())`
+  - Workflow-input type annotations emitted as base facts by `ClingoSynthesisEngine` to avoid incremental redefinition errors
+  - Time-indexed auxiliary predicates (`ape_holds_dim(out(t,...))`, `ape_goal_out(t,...)`) prevent atom redefinition across incremental grounding steps
+
+- `--clingo-debug` flag
+  - New CLI flag (and `"clingo_debug_mode": true` JSON config key) that writes per-length debug files to `<solutions_dir>/clingo_debug/`
+  - Each length produces a `facts_t<N>.lp` (grounded facts) and `result_t<N>.txt` (solve result + solution tool sequences)
+  - Independent of the general `--debug` / `debug_mode` flag
+
+- `--benchmark` flag
+  - New CLI flag (and `"benchmark_mode": true` JSON config key) that records timing and memory metrics to `<solutions_dir>/benchmark.csv`
+  - Per-length rows: `length`, `grounding_ms`, `solving_ms`, `solutions_at_length`, `cumulative_solutions`, `clingo_peak_memory_bytes`
+  - Summary `total` row adds `encoding_ms` and `jvm_used_bytes` (JVM heap sampled after the solve loop)
+  - Clingo peak memory read from `control.getStatistics()` (`summary.memory`); silently records `0` if the key is absent in the current build
+  - Appends to an existing `benchmark.csv` without repeating the header, enabling multi-run accumulation
+
 ### APE 2.6.0 - Snakemake, Partial Workflows and Major Refactorings
 
 - Maven Group change to `org.workflomics`

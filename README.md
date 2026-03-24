@@ -108,11 +108,37 @@ Automated workflow composition with APE can be performed through its command lin
 When running APE-[latest]-executable.jar from the command line, it requires a JSON configuration file given as a parameter and executes the automated workflow composition process accordingly:
 
 ```shell
-java -jar APE-[latest]-executable.jar [path-to-ape-configuration]
+java -jar APE-[latest]-executable.jar synthesis [path-to-ape-config]
 ```
-Running it using clingo
+
+#### Solver selection
+
+APE supports two solvers. Use one of the following flags to choose:
+
 ```shell
- java -jar ../../ape/target/APE-2.6.1-executable.jar synthesis [path_to_ape_config] --clingo
+# ASP solver via Clingo (default)
+java -jar APE-[latest]-executable.jar synthesis [path-to-ape-config] --clingo
+java -jar APE-[latest]-executable.jar synthesis [path-to-ape-config] --solver=clingo
+
+# SAT solver (classic)
+java -jar APE-[latest]-executable.jar synthesis [path-to-ape-config] --sat
+java -jar APE-[latest]-executable.jar synthesis [path-to-ape-config] --solver=sat
+```
+
+The solver can also be set in the configuration JSON with `"solverType": "CLINGO"` or `"solverType": "SAT"`.
+
+#### Clingo-specific flags
+
+| Flag | Description |
+|------|-------------|
+| `--clingo-encodings=<dir>` | Use custom `.lp` encoding files from the given directory instead of the built-in ones. |
+| `--clingo-debug` | Write per-length debug files (`facts_t<N>.lp`, `result_t<N>.txt`) to `<solutions_dir>/clingo_debug/`. Also settable via `"clingo_debug_mode": true` in the config JSON. |
+| `--benchmark` | Write timing and memory metrics to `<solutions_dir>/benchmark.csv` after synthesis. Each run appends to an existing file. Also settable via `"benchmark_mode": true` in the config JSON. |
+
+Example combining multiple flags:
+
+```shell
+java -jar APE-[latest]-executable.jar synthesis path/to/config.json --clingo --benchmark --clingo-debug
 ```
 
 The configuration file (see [APE cofiguration example](https://github.com/sanctuuary/APE_UseCases/blob/master/ImageMagick/Example1/config.json) and [APE configuration documentation](https://ape-framework.readthedocs.io/en/latest/docs/specifications/domain.html#configuration-file)) provides references to all therefor required information:

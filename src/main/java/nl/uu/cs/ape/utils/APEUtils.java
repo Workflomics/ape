@@ -444,14 +444,36 @@ public final class APEUtils {
 	 * @return The time counted by the timer.
 	 */
 	public static long timerPrintSolutions(String timerID, int solutionsFound) {
+		return timerPrintSolutions(timerID, solutionsFound, nl.uu.cs.ape.models.enums.SolverType.SAT);
+	}
+
+	/**
+	 * Timer print solutions with solver-specific timing labels.
+	 *
+	 * @param timerID        the timer id
+	 * @param solutionsFound the solutions found
+	 * @param solverType     the solver that was used
+	 * @return The time counted by the timer.
+	 */
+	public static long timerPrintSolutions(String timerID, int solutionsFound,
+			nl.uu.cs.ape.models.enums.SolverType solverType) {
 		if (timers.get(timerID) == -1) {
 			return -1;
 		}
 		long printTime = System.currentTimeMillis() - timers.get(timerID);
 		log.info("APE found " + solutionsFound + " solutions.");
 		log.info("Total APE runtime: \t\t" + (printTime / 1000F) + " sec.");
-		log.info("Total encoding time: \t\t" + (SATSynthesisEngine.getTotalEncodingTime() / 1000F) + " sec.");
-		log.info("Total SAT solving time: \t" + (SATSynthesisEngine.getTotalSolvingTime() / 1000F) + " sec.");
+		if (solverType == nl.uu.cs.ape.models.enums.SolverType.CLINGO) {
+			log.info("Total encoding time: \t\t"
+					+ (nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine.getTotalEncodingTime() / 1000F) + " sec.");
+			log.info("Total grounding time: \t\t"
+					+ (nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine.getTotalGroundingTime() / 1000F) + " sec.");
+			log.info("Total Clingo solving time: \t"
+					+ (nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine.getTotalSolvingTime() / 1000F) + " sec.");
+		} else {
+			log.info("Total encoding time: \t\t" + (SATSynthesisEngine.getTotalEncodingTime() / 1000F) + " sec.");
+			log.info("Total SAT solving time: \t" + (SATSynthesisEngine.getTotalSolvingTime() / 1000F) + " sec.");
+		}
 		return printTime;
 	}
 

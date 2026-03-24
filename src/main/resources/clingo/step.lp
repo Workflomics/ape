@@ -273,7 +273,9 @@ pipeline_has_at(t, Prop) :-
 :- occurs(t, run(Tool)), not multi_run(Tool), occurs(T1, run(Tool)), T1 < t.
 
 % ----------------------------------------------------------------
-% Show helper
+% Sequential workflow: at most one tool runs per timestep
+% (mirrors the SAT automaton which allocates exactly one tool slot per step)
 % ----------------------------------------------------------------
 
-tool_at_time(t, Tool) :- occurs(t, run(Tool)).
+:- 2 { occurs(t, run(_)) }.
+
