@@ -106,6 +106,10 @@ public class APERunConfig {
      */
     private final APEConfigTag<Boolean> TOOL_SEQ_REPEAT = new APEConfigTagFactory.TAGS.TOOL_SEQ_REPEAT();
     /**
+     * Path to the directory containing custom clingo encoding files.
+     */
+    private final APEConfigTag<Path> CLINGO_ENCODINGS_PATH = new APEConfigTagFactory.TAGS.CLINGO_ENCODINGS_PATH();
+    /**
      * Input types of the workflow.
      */
     private final APEConfigDependentTag.One<List<Type>, APEDomainSetup> PROGRAM_INPUTS = new APEConfigTagFactory.TAGS.PROGRAM_INPUTS(
@@ -135,6 +139,7 @@ public class APERunConfig {
             this.DEBUG_MODE,
             this.TIMEOUT_SEC,
             this.TOOL_SEQ_REPEAT,
+            this.CLINGO_ENCODINGS_PATH,
             this.PROGRAM_OUTPUTS,
             this.PROGRAM_INPUTS
     };
@@ -159,6 +164,7 @@ public class APERunConfig {
             new DEBUG_MODE(),
             new TIMEOUT_SEC(),
             new TOOL_SEQ_REPEAT(),
+            new CLINGO_ENCODINGS_PATH(),
             new PROGRAM_OUTPUTS(null),
             new PROGRAM_INPUTS(null));
 
@@ -169,7 +175,7 @@ public class APERunConfig {
     private APEDomainSetup apeDomainSetup;
 
     /** Solver type that should be used (SAT). */
-    private SolverType solverType = SolverType.CLINGO;
+    private SolverType solverType = SolverType.SAT;
 
     /**
      * Constructor used to implement the Builder Pattern.
@@ -198,6 +204,7 @@ public class APERunConfig {
         setUseAllGeneratedData(builder.useAllGeneratedData);
         setDebugMode(builder.debugMode);
         setTimeoutSec(builder.timeoutSec);
+        setClingoEncodingsPath(builder.clingoEncodingsPath);
         setProgramInputs(builder.programInputs);
         setProgramOutputs(builder.programOutputs);
     }
@@ -633,6 +640,33 @@ public class APERunConfig {
     }
 
     /**
+     * Gets the custom clingo encodings path.
+     *
+     * @return the value of {@link #CLINGO_ENCODINGS_PATH}
+     */
+    public Path getClingoEncodingsPath() {
+        return CLINGO_ENCODINGS_PATH.getValue();
+    }
+
+    /**
+     * @param clingoEncodingsPath the custom clingo encodings path to set
+     */
+    public void setClingoEncodingsPath(Path clingoEncodingsPath) {
+        CLINGO_ENCODINGS_PATH.setValue(clingoEncodingsPath);
+    }
+
+    /**
+     * @param clingoEncodingsPath the custom clingo encodings path to set
+     */
+    public void setClingoEncodingsPath(String clingoEncodingsPath) {
+        if (clingoEncodingsPath != null && !clingoEncodingsPath.isEmpty()) {
+            CLINGO_ENCODINGS_PATH.setValue(Paths.get(clingoEncodingsPath));
+        } else {
+            CLINGO_ENCODINGS_PATH.setValue(null);
+        }
+    }
+
+    /**
      * @param solutionMinLength the solutionMinLength to set
      * @param solutionMaxLength the solutionMaxLength to set
      */
@@ -725,6 +759,8 @@ public class APERunConfig {
 
         IBuildStage withTimeoutSec(int timeoutSec);
 
+        IBuildStage withClingoEncodingsPath(String clingoEncodingsPath);
+
         APERunConfig build();
     }
 
@@ -751,6 +787,7 @@ public class APERunConfig {
         private ConfigEnum useAllGeneratedData;
         private boolean debugMode;
         private int timeoutSec;
+        private String clingoEncodingsPath;
 
         private Builder() {
         }
@@ -860,6 +897,12 @@ public class APERunConfig {
         @Override
         public IBuildStage withTimeoutSec(int timeout) {
             this.timeoutSec = timeout;
+            return this;
+        }
+
+        @Override
+        public IBuildStage withClingoEncodingsPath(String clingoEncodingsPath) {
+            this.clingoEncodingsPath = clingoEncodingsPath;
             return this;
         }
 

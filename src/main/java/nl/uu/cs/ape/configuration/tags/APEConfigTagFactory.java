@@ -1128,5 +1128,31 @@ public class APEConfigTagFactory {
                 return APEConfigDefaultValue.withDefault(true);
             }
         }
+
+        /**
+         * Configuration field.
+         */
+        public static class CLINGO_ENCODINGS_PATH extends TYPES.Directory {
+
+            @Override
+            protected APEFiles.Permission[] getRequiredPermissions() {
+                return new APEFiles.Permission[] { APEFiles.Permission.READ };
+            }
+
+            @Override
+            public String getTagName() {
+                return "clingo_encodings_path";
+            }
+
+            @Override
+            public String getLabel() {
+                return "Clingo encodings directory";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Path to the directory containing custom .lp clingo encoding files.";
+            }
+        }
     }
 }

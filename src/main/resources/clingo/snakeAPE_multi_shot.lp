@@ -1,0 +1,13 @@
+#include "base.lp".
+#include "step.lp".
+#include "check.lp".
+#include "show.lp".
+#include "tool_inclusion.lp".
+#include "tool_dependency.lp".
+#include "properties.lp".
+#include "artifact_state_constraints.lp".
+#include "temporal_constraint.lp".
+#include "input_usage.lp".
+#include "recipe_constraints.lp".
+#include "workflode_constraints.lp".
+#include "energy_cost.lp".

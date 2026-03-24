@@ -16,9 +16,18 @@ import nl.uu.cs.ape.models.sltlxStruc.SLTLxLiteral;
 import nl.uu.cs.ape.solver.SolutionInterpreter;
 import nl.uu.cs.ape.solver.minisat.SATOutput;
 import nl.uu.cs.ape.solver.minisat.SATSynthesisEngine;
+import nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine;
 import nl.uu.cs.ape.solver.solutionStructure.graphviz.SolutionGraph;
 import nl.uu.cs.ape.solver.solutionStructure.graphviz.SolutionGraphFactory;
 import nl.uu.cs.ape.models.enums.AtomType;
+
+import org.potassco.clingo.solving.Model;
+import org.potassco.clingo.symbol.Symbol;
+import org.potassco.clingo.symbol.Function;
+import org.potassco.clingo.symbol.Number;
+import org.potassco.clingo.symbol.Text;
+import org.potassco.clingo.control.ShowType;
+import nl.uu.cs.ape.solver.clingo.ClingoSynthesisEngine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -253,6 +262,165 @@ public class SolutionWorkflow {
 
         this.workflowOutputTypeStates.removeIf(TypeNode::isEmpty);
 
+    }
+
+    /**
+     * Create a solution workflow, based on the Clingo output.
+     *
+     * @param clingoModel       Clingo solution model.
+     * @param synthesisInstance Current synthesis instance
+     */
+    public SolutionWorkflow(Model clingoModel, ClingoSynthesisEngine synthesisInstance) {
+        /* Call for the default constructor. */
+        this(synthesisInstance.getModuleAutomaton(), synthesisInstance.getTypeAutomaton());
+
+        this.nativeSolution = new SolutionInterpreter() {
+            @Override
+            public String getSolution() { return "Clingo solution details omitted"; }
+            @Override
+            public String getRelevantSolution() { return "Clingo relevant solution details omitted"; }
+            @Override
+            public String getRelevantToolsInSolution() {
+                StringBuilder solution = new StringBuilder();
+                for (ModuleNode literal : moduleNodes) {
+                    solution.append(literal.getUsedModule().getPredicateLabel()).append(" -> ");
+                }
+                return APEUtils.removeNLastChar(solution.toString(), 4);
+            }
+            @Override
+            public String getCompleteSolution() { return "Clingo complete solution details omitted"; }
+            @Override
+            public List<Module> getRelevantSolutionModules(nl.uu.cs.ape.models.AllModules allModules) {
+                List<Module> solutionModules = new ArrayList<>();
+                for (ModuleNode literal : moduleNodes) {
+                    solutionModules.add((Module) allModules.get(literal.getUsedModule().getPredicateID()));
+                }
+                return solutionModules;
+            }
+            @Override
+            public boolean isSat() { return true; }
+        };
+
+        Map<String, TypeNode> clingoDataToTypeNode = new HashMap<>();
+        for(int i = 0; i < this.workflowInputTypeStates.size(); i++) {
+            clingoDataToTypeNode.put("wf_input_" + i, this.workflowInputTypeStates.get(i));
+        }
+
+        // Pass 1: Modules and Type allocations
+        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
+            if (symbol instanceof Function && ((Function) symbol).getName().equals("occurs")) {
+                Symbol[] args = ((Function) symbol).getArguments();
+                int time = ((Number) args[0]).getNumber();
+                Symbol action = args[1];
+                if (action instanceof Function && ((Function) action).getName().equals("run")) {
+                    String toolId = ((Function) action).getArguments()[0] instanceof Text ? ((Text) ((Function) action).getArguments()[0]).getText() : ((Function) action).getArguments()[0].toString();
+                    ModuleNode moduleNode = this.moduleNodes.get(time - 1);
+                    nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate toolPred = synthesisInstance.getDomainSetup().getAllModules().get(toolId);
+                    if (toolPred instanceof nl.uu.cs.ape.models.Module) {
+                        moduleNode.setUsedModule((nl.uu.cs.ape.models.Module) toolPred);
+                    } else if (toolPred instanceof nl.uu.cs.ape.models.AbstractModule) {
+                        moduleNode.addAbstractDescriptionOfUsedType((nl.uu.cs.ape.models.AbstractModule) toolPred);
+                    }
+                }
+            } else if (symbol instanceof Function && ((Function) symbol).getName().equals("holds")) {
+                Symbol[] args = ((Function) symbol).getArguments();
+                Symbol fluent = args[1];
+                if (fluent instanceof Function && ((Function) fluent).getName().equals("dim")) {
+                    Symbol[] dimArgs = ((Function) fluent).getArguments();
+                    String dataId = symbolToKey(dimArgs[0]);
+                    if (dataId.startsWith("out(")) {
+                        int stepTime = ((Number) ((Function) dimArgs[0]).getArguments()[0]).getNumber();
+                        ModuleNode creator = this.moduleNodes.get(stepTime - 1);
+                        String portId = ((Function) dimArgs[0]).getArguments()[2] instanceof Text ? ((Text) ((Function) dimArgs[0]).getArguments()[2]).getText() : ((Function) dimArgs[0]).getArguments()[2].toString();
+                        int outIndex = 0;
+                        try {
+                            String[] parts = portId.split("_out_");
+                            if (parts.length > 1) {
+                                outIndex = Integer.parseInt(parts[1].split("_port_")[0]);
+                            }
+                        } catch(Exception e) {}
+                        
+                        if (outIndex < creator.getOutputTypes().size()) {
+                            clingoDataToTypeNode.put(dataId, creator.getOutputTypes().get(outIndex));
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Pass 2: TypeNode attributes
+        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
+            if (symbol instanceof Function && ((Function) symbol).getName().equals("holds")) {
+                Symbol[] args = ((Function) symbol).getArguments();
+                Symbol fluent = args[1];
+                if (fluent instanceof Function && ((Function) fluent).getName().equals("dim")) {
+                    Symbol[] dimArgs = ((Function) fluent).getArguments();
+                    String dataId = symbolToKey(dimArgs[0]);
+                    String valueId = dimArgs[1] instanceof Text ? ((Text) dimArgs[1]).getText() : dimArgs[1].toString();
+                    TypeNode typeNode = clingoDataToTypeNode.get(dataId);
+                    if (typeNode != null) {
+                        nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate typePred = synthesisInstance.getDomainSetup().getAllTypes().get(valueId);
+                        if (typePred instanceof Type) {
+                            if (((Type) typePred).isNodeType(NodeType.LEAF) || ((Type) typePred).isNodeType(NodeType.EMPTY_LABEL)) {
+                                typeNode.addUsedType((Type) typePred);
+                            } else {
+                                typeNode.addAbstractDescriptionOfUsedType((Type) typePred);
+                            }
+                        }
+                    }
+                }
+            } else if (symbol instanceof Function && ((Function) symbol).getName().equals("goal_satisfied_by")) {
+                Symbol[] goalArgs = ((Function) symbol).getArguments();
+                int goalId = ((Number) goalArgs[1]).getNumber();
+                String dataId = symbolToKey(goalArgs[2]);
+                TypeNode memoryTypeNode = clingoDataToTypeNode.get(dataId);
+                if (memoryTypeNode != null) {
+                    APEUtils.safeSet(this.workflowOutputTypeStates, goalId, memoryTypeNode);
+                }
+            }
+        }
+        
+        // Pass 3: Bindings
+        for (Symbol symbol : clingoModel.getSymbols(ShowType.all())) {
+            if (symbol instanceof Function && ((Function) symbol).getName().equals("occurs")) {
+                Symbol[] args = ((Function) symbol).getArguments();
+                int time = ((Number) args[0]).getNumber();
+                Symbol action = args[1];
+                if (action instanceof Function && ((Function) action).getName().equals("bind")) {
+                    Symbol[] bindArgs = ((Function) action).getArguments();
+                    String portId = bindArgs[1] instanceof Text ? ((Text) bindArgs[1]).getText() : bindArgs[1].toString();
+                    String dataId = symbolToKey(bindArgs[2]);
+                    
+                    ModuleNode moduleNode = this.moduleNodes.get(time - 1);
+                    int inIndex = 0;
+                    try {
+                        String[] parts = portId.split("_in_");
+                        if (parts.length > 1) {
+                            inIndex = Integer.parseInt(parts[1].split("_port_")[0]);
+                        }
+                    } catch(Exception e) {}
+                    
+                    TypeNode memoryTypeNode = clingoDataToTypeNode.get(dataId);
+                    if (memoryTypeNode != null) {
+                        moduleNode.setInputType(inIndex, memoryTypeNode);
+                        memoryTypeNode.addUsedByTool(moduleNode);
+                    }
+                }
+            }
+        }
+        
+        /* Remove empty elements of the sets. */
+        this.moduleNodes.removeIf(ModuleNode::isEmpty);
+        this.workflowInputTypeStates.removeIf(TypeNode::isEmpty);
+        this.workflowOutputTypeStates.removeIf(TypeNode::isEmpty);
+    }
+
+    /**
+     * Convert a Clingo Symbol to a string key suitable for map lookups.
+     * Text symbols return the unquoted string; all others use their native toString().
+     */
+    private static String symbolToKey(Symbol s) {
+        return s instanceof Text ? ((Text) s).getText() : s.toString();
     }
 
     /**

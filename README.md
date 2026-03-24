@@ -110,6 +110,10 @@ When running APE-[latest]-executable.jar from the command line, it requires a JS
 ```shell
 java -jar APE-[latest]-executable.jar [path-to-ape-configuration]
 ```
+Running it using clingo
+```shell
+ java -jar ../../ape/target/APE-2.6.1-executable.jar synthesis [path_to_ape_config] --clingo
+```
 
 The configuration file (see [APE cofiguration example](https://github.com/sanctuuary/APE_UseCases/blob/master/ImageMagick/Example1/config.json) and [APE configuration documentation](https://ape-framework.readthedocs.io/en/latest/docs/specifications/domain.html#configuration-file)) provides references to all therefor required information:
 1. *Domain model* - classification of the types and operations in the domain in form of an **ontology** (see [ontology example](https://github.com/sanctuuary/APE_UseCases/blob/master/ImageMagick/imagemagick_taxonomy.owl) in OWL) and a **tool annotation file** (see [tool annotations example](https://github.com/sanctuuary/APE_UseCases/blob/master/ImageMagick/tool_annotations.json) in JSON).

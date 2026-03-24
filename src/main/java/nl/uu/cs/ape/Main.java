@@ -159,7 +159,8 @@ public class Main {
     public static void executeSynthesis(String[] args) {
         String path;
         int solutionsNo = -1;
-        nl.uu.cs.ape.models.enums.SolverType solverType = nl.uu.cs.ape.models.enums.SolverType.CLINGO;
+        nl.uu.cs.ape.models.enums.SolverType solverType = nl.uu.cs.ape.models.enums.SolverType.SAT;
+        String clingoEncodingsPath = null;
 
         java.util.List<String> parsedArgs = new java.util.ArrayList<>();
         for (String arg : args) {
@@ -167,6 +168,8 @@ public class Main {
                 solverType = nl.uu.cs.ape.models.enums.SolverType.CLINGO;
             } else if (arg.equals("--sat") || arg.equals("--solver=sat")) {
                 solverType = nl.uu.cs.ape.models.enums.SolverType.SAT;
+            } else if (arg.startsWith("--clingo-encodings=")) {
+                clingoEncodingsPath = arg.substring("--clingo-encodings=".length());
             } else {
                 parsedArgs.add(arg);
             }
@@ -211,6 +214,9 @@ public class Main {
         try {
 
             JSONObject runConfigJson = APEFiles.readFileToJSONObject(new File(path));
+            if (clingoEncodingsPath != null) {
+                runConfigJson.put("clingo_encodings_path", clingoEncodingsPath);
+            }
             APERunConfig runConfig = new APERunConfig(runConfigJson, apeFramework.getDomainSetup());
             runConfig.setSolverType(solverType);
 
