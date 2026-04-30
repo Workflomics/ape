@@ -101,7 +101,6 @@ proteomics [@palmblad_automated_2018] (based on the EDAM ontology [@ison2013edam
 registry as domain models), creation of thematic maps depicting bird movement patterns in the
 Netherlands [@kasalicaLamprecht2019] (based on the GMT collection of mapping tools [@wessel_generic_2013]), and creation
 of a liveability atlas of Amsterdam [@scheiderCCD2020] (based on standard GIS operations as provided by ArcGIS).
-Further applications, in particular in bioinformatics and geosciences, are currently being developed.
 
 
 # AI usage disclosure
@@ -117,8 +116,7 @@ No generative AI tools were used in the writing of this manuscript, or the prepa
 
 # Acknowledgements
 
-The development of APE has been supported by the last author's Westerdijk Fellowship (Utrecht University, Faculty of Science)
-and Open Science Community Utrecht Faculty Ambassadorship (Utrecht University, Open Science Program).
+The development of APE has been supported by the last author's Westerdijk Fellowship (Utrecht University, Faculty of Science), Open Science Community Utrecht Faculty Ambassadorship (Utrecht University, Open Science Program) and the Netherlands eScience Center, grant number OEC.2021.024.
 We are grateful to our users and collaborators for their continuous feedback that helps us improving APE.
 
 Also, we are grateful for contributions by Michael R. Crusoe, especially the support in [integrating](https://github.com/Workflomics/ape/pull/138) the `cwl2java`
