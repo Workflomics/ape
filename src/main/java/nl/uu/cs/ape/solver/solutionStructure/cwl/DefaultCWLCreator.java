@@ -11,6 +11,7 @@ import nl.uu.cs.ape.utils.APEUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.json.JSONArray;
@@ -86,6 +87,11 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
                 }
             }
             String inputName = String.format("input_%d", i++);
+            StringBuilder typeAnnotations = new StringBuilder();
+            for (Type t : typeNode.getTypes()) {
+                typeAnnotations.append("_").append(t.getPredicateLabel());
+            }
+            inputName += typeAnnotations;
             addNewParameterToMap(typeNode, inputName);
             inputsInCWL
                     // Name
@@ -133,10 +139,15 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
         // Outputs
         int i = 1;
         for (TypeNode typeNode : solution.getWorkflowOutputTypeStates()) {
+            StringBuilder typeAnnotations = new StringBuilder();
+            for (Type t : typeNode.getTypes()) {
+                typeAnnotations.append("_").append(t.getPredicateLabel());
+            }
             cwlRepresentation
                     // Name
                     .append(ind(1))
                     .append(String.format("output_%d", i))
+                    .append(typeAnnotations)
                     .append(":\n")
                     // Data type
                     .append(ind(2))
@@ -154,10 +165,16 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
                     .append("/");
             // Get the id of the step run's output bound to this workflow output
             // (step_name/output_name_ID)
-            int outId = typeNode.getCreatedByModule().getOutputTypes().get(i - 1).getAutomatonState()
-                    .getLocalStateNumber();
+            int outId = -1;
+            for (TypeNode outputType : typeNode.getCreatedByModule().getOutputTypes()) {
+                if (outputType == typeNode) {
+                    outId = outputType.getAutomatonState().getLocalStateNumber();
+                    break;
+                }
+            }
             cwlRepresentation
                     .append(typeNode.getCreatedByModule().getOutputCWLKeys().get(outId))
+                    .append(typeAnnotations)
                     .append("\n");
             i++;
         }
@@ -213,6 +230,9 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
                     .forEach(i -> cwlRepresentation
                             .append(ind(baseInd + 1))
                             .append(moduleNode.getInputCWLKeys().get(i))
+                            .append(inputs.get(i).getTypes().stream()
+                                    .map(t -> t.getPredicateLabel())
+                                    .collect(Collectors.joining("_", "_","")))
                             .append(": ")
                             .append(workflowParameters.get(inputs.get(i).getNodeID()))
                             .append("\n"));
@@ -236,7 +256,10 @@ public class DefaultCWLCreator extends CWLWorkflowBase {
         List<TypeNode> outputs = moduleNode.getOutputTypes();
         IntStream.range(0, outputs.size()).filter(i -> !outputs.get(i).isEmpty())
                 .forEach(i -> {
-                    String name = moduleNode.getOutputCWLKeys().get(i);
+                    String cwlKey = moduleNode.getOutputCWLKeys().get(i);
+                    String name = cwlKey + outputs.get(i).getTypes().stream()
+                                            .map(t -> t.getPredicateLabel())
+                                            .collect(Collectors.joining("_", "_", ""));
                     addNewParameterToMap(outputs.get(i), String.format("%s/%s", SolutionCreationUtils.stepName(moduleNode), name));
                     cwlRepresentation
                             .append(name)
