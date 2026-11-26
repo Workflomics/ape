@@ -163,7 +163,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.19.0</version>
+            <version>3.22.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <dependency>
@@ -241,6 +241,7 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.sat4j/org.sat4j.core -->
 		<dependency>
+			<!-- current version as of 26.11.2026, no reported vulnerabilities -->
 			<groupId>org.sat4j</groupId>
 			<artifactId>org.sat4j.core</artifactId>
 			<version>2.3.1</version>
