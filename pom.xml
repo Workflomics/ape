@@ -220,6 +220,14 @@
             <artifactId>graphviz-java</artifactId>
             <version>0.17.0</version>
         </dependency>
+		<!-- JavaScript engine used by graphviz-java to render graphs
+             when the native Graphviz 'dot' binary is not installed -->
+        <!-- https://mvnrepository.com/artifact/org.graalvm.js/js -->
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>22.3.5</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-distribution -->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
