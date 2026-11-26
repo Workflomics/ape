@@ -237,7 +237,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20240205</version>
+            <version>20260814</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.sat4j/org.sat4j.core -->
 		<dependency>
