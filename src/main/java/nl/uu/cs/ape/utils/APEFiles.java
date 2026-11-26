@@ -292,8 +292,8 @@ public class APEFiles {
     /** Connect and read timeout used when reading content from a URL. */
     private static final int URL_TIMEOUT_MS = 10000;
 
-    /** Maximum size of the content read from a URL (100 MB). */
-    public static final long MAX_URL_DOWNLOAD_BYTES = 100L * 1024 * 1024;
+    /** Maximum size of the content read from a URL (50 MB). */
+    public static final long MAX_URL_DOWNLOAD_BYTES = 50L * 1024 * 1024;
 
     /**
      * String is a valid URI.
