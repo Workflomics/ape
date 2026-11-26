@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.uu.cs.ape.utils.APEFiles;
 import nl.uu.cs.ape.utils.APEUtils;
 import nl.uu.cs.ape.utils.cwl_parser.CWLParser;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -29,6 +31,18 @@ public class BioToolsAPI {
 
 	/** Http-Client */
 	private static final OkHttpClient client = new OkHttpClient();
+
+	/** Base URL of the bio.tools API. */
+	private static final HttpUrl BIO_TOOLS_API = HttpUrl.get("https://bio.tools/api/");
+
+	/** URL of the bio.tools tool list endpoint. */
+	private static final HttpUrl BIO_TOOLS_TOOL_LIST = HttpUrl.get("https://bio.tools/api/t");
+
+	/**
+	 * Allowed bio.tools IDs: letters, digits, '_', '-' and '.' (see the
+	 * biotoolsSchema), but not only dots, which would change the URL path.
+	 */
+	private static final Pattern BIO_TOOLS_ID_PATTERN = Pattern.compile("(?!\\.+$)[A-Za-z0-9_.\\-]+");
 
 	/**
 	 * Retrieve the list of tools from the bio.tools API and convert it to the
@@ -95,11 +109,11 @@ public class BioToolsAPI {
 	 */
 	public static JSONObject getToolsFromDomain(String domainName, boolean excludeBadAnnotation) throws IOException {
 		JSONArray toolAnnotations = null;
-		if (domainName.isEmpty()) {
-			toolAnnotations = fetchToolsFromURI("https://bio.tools/api/t?format=json");
-		} else {
-			toolAnnotations = fetchToolsFromURI("https://bio.tools/api/t?domain=" + domainName + "&format=json");
+		HttpUrl.Builder url = BIO_TOOLS_TOOL_LIST.newBuilder();
+		if (!domainName.isEmpty()) {
+			url.addQueryParameter("domain", domainName);
 		}
+		toolAnnotations = fetchToolsFromURI(url.build());
 		return convertBioTools2Ape(toolAnnotations, excludeBadAnnotation);
 	}
 
@@ -117,11 +131,11 @@ public class BioToolsAPI {
 	public static JSONObject getAndConvertToolsFromEDAMTopic(String topicName, boolean excludeBadAnnotation)
 			throws IOException {
 		JSONArray toolAnnotations = null;
-		if (topicName.isEmpty()) {
-			toolAnnotations = fetchToolsFromURI("https://bio.tools/api/t?format=json");
-		} else {
-			toolAnnotations = fetchToolsFromURI("https://bio.tools/api/t?topicID=\"" + topicName + "\"&format=json");
+		HttpUrl.Builder url = BIO_TOOLS_TOOL_LIST.newBuilder();
+		if (!topicName.isEmpty()) {
+			url.addQueryParameter("topicID", "\"" + topicName + "\"");
 		}
+		toolAnnotations = fetchToolsFromURI(url.build());
 
 		return convertBioTools2Ape(toolAnnotations, excludeBadAnnotation);
 	}
@@ -157,7 +171,15 @@ public class BioToolsAPI {
 	 */
 	public static JSONObject fetchToolFromBioTools(String biotoolsID) throws IOException, JSONException {
 
-		Request request = new Request.Builder().url("https://bio.tools/api/" + biotoolsID + "?format=json").build();
+		if (biotoolsID == null || !BIO_TOOLS_ID_PATTERN.matcher(biotoolsID).matches()) {
+			throw new IOException("Invalid bio.tools ID '" + biotoolsID
+					+ "'. IDs can only contain letters, digits, '_', '-' and '.'.");
+		}
+		HttpUrl url = BIO_TOOLS_API.newBuilder()
+				.addPathSegment(biotoolsID)
+				.addQueryParameter("format", "json")
+				.build();
+		Request request = new Request.Builder().url(url).build();
 		try (Response response = client.newCall(request).execute()) {
 			if (!response.isSuccessful()) {
 				log.error("The tool " + biotoolsID + " could not be fetched from bio.tools.");
@@ -175,13 +197,21 @@ public class BioToolsAPI {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private static JSONArray fetchToolsFromURI(String url) throws JSONException, IOException {
+	private static JSONArray fetchToolsFromURI(HttpUrl url) throws JSONException, IOException {
 		JSONArray bioToolAnnotations = new JSONArray();
 		log.info("Fetching tools from bio.tools: " + url);
 		String next = "";
 		int i = 1;
 		while (next != null) {
-			Request request = new Request.Builder().url(url + "&format=json" + next.replace('?', '&')).build();
+			HttpUrl.Builder pageUrl = url.newBuilder().setQueryParameter("format", "json");
+			/* 'next' is the query of the next page (e.g. "?page=2"), keep the original filters. */
+			HttpUrl nextQuery = HttpUrl.parse("https://bio.tools/" + next);
+			if (nextQuery != null) {
+				for (String name : nextQuery.queryParameterNames()) {
+					pageUrl.setQueryParameter(name, nextQuery.queryParameter(name));
+				}
+			}
+			Request request = new Request.Builder().url(pageUrl.build()).build();
 			try (Response response = client.newCall(request).execute()) {
 				if (!response.isSuccessful())
 					throw new IOException("Unexpected code when trying to fetch" + response);
