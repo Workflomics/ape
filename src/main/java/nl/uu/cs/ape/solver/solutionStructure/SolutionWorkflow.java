@@ -199,7 +199,7 @@ public class SolutionWorkflow {
 
         for (int mappedLiteral : satSolution) {
             if (mappedLiteral >= synthesisInstance.getMappings().getInitialNumOfMappedAtoms()) {
-                SLTLxLiteral currLiteral = new SLTLxLiteral(Integer.toString(mappedLiteral),
+                SLTLxLiteral currLiteral = new SLTLxLiteral(mappedLiteral,
                         synthesisInstance.getMappings());
                 if (!currLiteral.isNegated()) {
                     // Skip elements that should not be presented.

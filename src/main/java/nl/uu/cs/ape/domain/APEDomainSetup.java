@@ -3,6 +3,7 @@ package nl.uu.cs.ape.domain;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import nl.uu.cs.ape.models.AuxiliaryPredicate;
 import nl.uu.cs.ape.models.ConstraintTemplateData;
 import nl.uu.cs.ape.models.Module;
 import nl.uu.cs.ape.models.SATAtomMappings;
+import nl.uu.cs.ape.solver.minisat.CNFClauseBuffer;
 import nl.uu.cs.ape.models.Type;
 import nl.uu.cs.ape.models.enums.ToolAnnotationType;
 import nl.uu.cs.ape.models.logic.constructs.TaxonomyPredicate;
@@ -734,17 +736,22 @@ public class APEDomainSetup {
     /**
      * Write locally the SAT (CNF) workflow specification in human readable format.
      * 
-     * @param satInputFile File containing the SAT problem specification.
+     * @param clauseBuffer In-memory CNF encoding of the SAT problem.
      * @param mappings     Mappings between the SAT problem and the domain.
      * @throws IOException Error in writing the file to the local file system.
      */
-    public void localCNF(File satInputFile, SATAtomMappings mappings) throws IOException {
+    public void localCNF(CNFClauseBuffer clauseBuffer, SATAtomMappings mappings) throws IOException {
         if (writeLocalCNF != null) {
-            FileInputStream cnfStream = new FileInputStream(satInputFile);
-            String encoding = APEUtils.convertCNF2humanReadable(cnfStream, mappings);
-            cnfStream.close();
-
-            APEFiles.write2file(encoding, new File(writeLocalCNF), false);
+            File satInputFile = File.createTempFile("satCNF", ".cnf");
+            try {
+                clauseBuffer.writeDimacs(satInputFile, mappings.getSize());
+                try (FileInputStream cnfStream = new FileInputStream(satInputFile)) {
+                    String encoding = APEUtils.convertCNF2humanReadable(cnfStream, mappings);
+                    APEFiles.write2file(encoding, new File(writeLocalCNF), false);
+                }
+            } finally {
+                Files.deleteIfExists(satInputFile.toPath());
+            }
         }
     }
 

@@ -82,7 +82,7 @@ public class SATOutput extends SolutionInterpreter {
         usedTypeStates = new HashSet<>();
         for (int mappedLiteral : satSolution) {
             if (mappedLiteral >= synthesisInstance.getMappings().getInitialNumOfMappedAtoms()) {
-                SLTLxLiteral currLiteral = new SLTLxLiteral(Integer.toString(mappedLiteral),
+                SLTLxLiteral currLiteral = new SLTLxLiteral(mappedLiteral,
                         synthesisInstance.getMappings());
                 literals.add(currLiteral);
                 if (!currLiteral.isNegated()) {
@@ -113,7 +113,7 @@ public class SATOutput extends SolutionInterpreter {
                     }
                 }
             } else if (mappedLiteral >= 100000) {
-                SLTLxLiteral currLiteral = new SLTLxLiteral(Integer.toString(mappedLiteral),
+                SLTLxLiteral currLiteral = new SLTLxLiteral(mappedLiteral,
                         synthesisInstance.getMappings());
                 literals.add(currLiteral);
             }
