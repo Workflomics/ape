@@ -2,9 +2,6 @@ package nl.uu.cs.ape.solver.minisat;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
-import org.sat4j.reader.DimacsReader;
-import org.sat4j.reader.ParseFormatException;
-import org.sat4j.reader.Reader;
 import org.sat4j.specs.*;
 
 import lombok.Getter;
@@ -13,7 +10,6 @@ import nl.uu.cs.ape.automaton.ModuleAutomaton;
 import nl.uu.cs.ape.automaton.TypeAutomaton;
 import nl.uu.cs.ape.configuration.APERunConfig;
 import nl.uu.cs.ape.domain.APEDomainSetup;
-import nl.uu.cs.ape.utils.APEFiles;
 import nl.uu.cs.ape.utils.APEUtils;
 import nl.uu.cs.ape.models.Pair;
 import nl.uu.cs.ape.models.SATAtomMappings;
@@ -26,11 +22,7 @@ import nl.uu.cs.ape.solver.SynthesisEngine;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionWorkflow;
 import nl.uu.cs.ape.solver.solutionStructure.SolutionsList;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -73,16 +65,16 @@ public class SATSynthesisEngine implements SynthesisEngine {
     private final SolutionsList allSolutions;
 
     /**
-     * CNF encoding of the problem.
+     * In-memory CNF encoding of the problem. Released once loaded into the
+     * solver.
      */
-    @Getter
-    private File cnfEncoding;
+    private CNFClauseBuffer clauseBuffer;
 
     /**
-     * File used as an input for the SAT solver.
+     * Number of clauses in the CNF encoding of the problem.
      */
     @Getter
-    private File satInputFile;
+    private int clauseCount;
 
     /**
      * Representation of the tool part of the automaton used to encode the structure
@@ -135,8 +127,7 @@ public class SATSynthesisEngine implements SynthesisEngine {
         this.mappings.resetAuxVariables();
         this.varUsage = new SLTLxVariableOccurrenceCollection();
 
-        this.satInputFile = null;
-        this.cnfEncoding = File.createTempFile("satCNF" + workflowLength, null);
+        this.clauseBuffer = new CNFClauseBuffer();
 
         int maxNoToolInputs = Math.max(domainSetup.getMaxNoToolInputs(), runConfig.getProgramOutputs().size());
         int maxNoToolOutputs = Math.max(domainSetup.getMaxNoToolOutputs(), runConfig.getProgramInputs().size());
@@ -169,7 +160,7 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * Create constraints from the tool_annotations.json file regarding the
          * Inputs/Outputs, preserving the structure of input and output fields.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceModuleRelatedRules.moduleAnnotations(this));
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules.moduleAnnotations(this));
         APEUtils.timerRestartAndPrint(currLengthTimer, "Tool I/O constraints");
 
         /*
@@ -177,7 +168,7 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * available in memory and the
          * logic of referencing data from memory in case of tool inputs.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceModuleRelatedRules.memoryStructure(this));
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules.memoryStructure(this));
         APEUtils.timerRestartAndPrint(currLengthTimer, "Memory structure encoding");
 
         /*
@@ -187,15 +178,15 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * 3. Adding the constraints enforcing the taxonomy structure.
          */
         for (Pair<PredicateLabel> pair : domainSetup.getAllModules().getSimplePairs()) {
-            SLTLxFormula.appendCNFToFile(cnfEncoding, this,
+            SLTLxFormula.appendCNF(clauseBuffer, this,
                     EnforceModuleRelatedRules.moduleMutualExclusion(pair, moduleAutomaton));
         }
         APEUtils.timerRestartAndPrint(currLengthTimer, "Tool exclusions encoding");
 
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this,
+        SLTLxFormula.appendCNF(clauseBuffer, this,
                 EnforceModuleRelatedRules.moduleMandatoryUsage(domainSetup.getAllModules(), moduleAutomaton));
 
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceModuleRelatedRules
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules
                 .moduleTaxonomyStructure(domainSetup.getAllModules(), rootModule, moduleAutomaton));
         APEUtils.timerRestartAndPrint(currLengthTimer, "Tool usage encoding");
         /*
@@ -206,34 +197,43 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * 3. Adding the constraints enforcing the taxonomy structure.
          */
         for (Pair<PredicateLabel> pair : domainSetup.getAllTypes().getTypePairsForEachSubTaxonomy()) {
-            SLTLxFormula.appendCNFToFile(cnfEncoding, this,
+            SLTLxFormula.appendCNF(clauseBuffer, this,
                     EnforceTypeRelatedRules.memoryTypesMutualExclusion(pair, typeAutomaton));
         }
         APEUtils.timerRestartAndPrint(currLengthTimer, "Type exclusions encoding");
 
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this,
+        SLTLxFormula.appendCNF(clauseBuffer, this,
                 EnforceTypeRelatedRules.typeMandatoryUsage(domainSetup, typeAutomaton));
 
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this,
+        SLTLxFormula.appendCNF(clauseBuffer, this,
                 EnforceTypeRelatedRules.typeEnforceTaxonomyStructure(domainSetup.getAllTypes(), typeAutomaton));
         APEUtils.timerRestartAndPrint(currLengthTimer, "Type usage encoding");
 
         /*
-         * Encode data ancestor relation (R) constraints.
+         * The data ancestor relation (R) and the data equivalence/identity relation
+         * (IS) can only be referred to by SLTLx formulas, which quantify over data.
+         * For every workflow there are values of R and IS that satisfy their
+         * constraints, so they never rule out a workflow by themselves, and they are
+         * only encoded when SLTLx formulas are given.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceModuleRelatedRules.ancestorRelationsDependency(this));
+        if (!domainSetup.getSLTLxConstraints().isEmpty()) {
+            /*
+             * Encode data ancestor relation (R) constraints.
+             */
+            SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules.ancestorRelationsDependency(this));
 
-        /*
-         * Encode data equivalence/identity relation (IS) constraints.
-         */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this,
-                EnforceModuleRelatedRules.identityRelationsDependency(typeAutomaton));
+            /*
+             * Encode data equivalence/identity relation (IS) constraints.
+             */
+            SLTLxFormula.appendCNF(clauseBuffer, this,
+                    EnforceModuleRelatedRules.identityRelationsDependency(typeAutomaton));
+        }
 
         /*
          * Setup encoding of 'true' and 'false' atoms to ensure proper SLTLx
          * interpretation.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceSLTLxRelatedRules.setTrueFalse());
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceSLTLxRelatedRules.setTrueFalse());
 
         /*
          * Workflow I/O are encoded the last in order to
@@ -242,18 +242,18 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * 
          * Encode the workflow input.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceTypeRelatedRules
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceTypeRelatedRules
                 .workflowInputs(domainSetup.getAllTypes(), runConfig.getProgramInputs(), typeAutomaton));
         /*
          * Encode the workflow output
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceTypeRelatedRules
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceTypeRelatedRules
                 .workflowOutputs(domainSetup.getAllTypes(), runConfig.getProgramOutputs(), typeAutomaton));
 
         /*
          * Encode rule that the given inputs should not be used as workflow outputs
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceTypeRelatedRules
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceTypeRelatedRules
                 .inputsAreNotOutputs(typeAutomaton));
 
         /*
@@ -261,7 +261,7 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * templates)
          */
         if (!domainSetup.getUnformattedConstr().isEmpty() || !domainSetup.getSLTLxConstraints().isEmpty()) {
-            APEFiles.appendToFile(cnfEncoding,
+            clauseBuffer.add(
                     SatEncodingUtils.encodeAPEConstraints(this, domainSetup, mappings, moduleAutomaton, typeAutomaton));
             APEUtils.timerRestartAndPrint(currLengthTimer, "SLTLx constraints");
         }
@@ -269,30 +269,17 @@ public class SATSynthesisEngine implements SynthesisEngine {
          * Setup the constraints ensuring that the auxiliary predicates are properly
          * used and linked to the underlying taxonomy predicates.
          */
-        SLTLxFormula.appendCNFToFile(cnfEncoding, this, EnforceSLTLxRelatedRules
+        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceSLTLxRelatedRules
                 .preserveAuxiliaryPredicateRules(moduleAutomaton, typeAutomaton, domainSetup.getHelperPredicates()));
 
-        /*
-         * Counting the number of variables and clauses that will be given to the SAT
-         * solver. As an improvement, the number of lines could be stored, not to be
-         * counted again.
-         */
-        int variables = mappings.getSize();
-        int clauses = APEUtils.countCNFClauses(new FileInputStream(cnfEncoding));
-        String satInputHeader = "p cnf " + variables + " " + clauses + "\n";
-        APEUtils.timerRestartAndPrint(currLengthTimer, "Reading rows");
-        satInputFile = APEFiles.prependToFile(satInputHeader, cnfEncoding);
-        cnfEncoding.delete();
-
-        /* add the cnf encoding file to Desktop */
-        // Files.copy(satInputFile, new File("~/Desktop/tmp"+ problemSetupStartTime));
-
+        int clauses = clauseBuffer.size();
+        this.clauseCount = clauses;
 
         /*
-         * Add human readable version of the cnf encoding file to Desktop. Used only when
+         * Write a human readable version of the CNF encoding. Used only when
          * explicitly specified (used for local testing).
          */
-        domainSetup.localCNF(satInputFile, mappings);
+        domainSetup.localCNF(clauseBuffer, mappings);
 
         long problemSetupTimeElapsedMillis = System.currentTimeMillis() - problemSetupStartTime;
         log.info("Total problem setup time: " + (problemSetupTimeElapsedMillis / 1000F) + " sec (" + clauses
@@ -310,22 +297,20 @@ public class SATSynthesisEngine implements SynthesisEngine {
      */
     public List<SolutionWorkflow> synthesisExecution() throws IOException {
 
-        InputStream tmpSatInput = new FileInputStream(satInputFile);
-        List<SolutionWorkflow> currSolutions = runMiniSAT(tmpSatInput,
+        List<SolutionWorkflow> currSolutions = runMiniSAT(
                 allSolutions.getNumberOfSolutions(), allSolutions.getMaxNumberOfSolutions());
-        tmpSatInput.close();
         /* Add current solutions to list of all solutions. */
         return currSolutions;
     }
 
     /**
-     * Returns a set of {@link SATOutput SAT_solutions} by parsing the SAT
-     * output. In case of the UNSAT the list is empty.
+     * Returns a set of {@link SATOutput SAT_solutions} by loading the in-memory
+     * CNF encoding into the solver and enumerating the models. In case of the
+     * UNSAT the list is empty.
      *
-     * @param satInput CNF formula in dimacs form.
      * @return List of {@link SATOutput SAT_solutions}. Possibly empty list.
      */
-    private List<SolutionWorkflow> runMiniSAT(InputStream satInput, int solutionsFound, int solutionsFoundMax) {
+    private List<SolutionWorkflow> runMiniSAT(int solutionsFound, int solutionsFoundMax) {
         List<SolutionWorkflow> solutions = new ArrayList<>();
         ISolver solver = SolverFactory.newDefault();
         long globalTimeoutMs = runConfig.getTimeoutMs();
@@ -338,10 +323,11 @@ public class SATSynthesisEngine implements SynthesisEngine {
         solver.setTimeoutMs(currTimeout);
         long realStartTime = 0;
         long realTimeElapsedMillis;
-        Reader reader = new DimacsReader(solver);
         try {
             // loading CNF encoding of the problem
-            IProblem problem = reader.parseInstance(satInput);
+            clauseBuffer.loadInto(solver, mappings.getSize());
+            clauseBuffer.clear();
+            IProblem problem = solver;
             realStartTime = System.currentTimeMillis();
             while (solutionsFound < solutionsFoundMax && problem.isSatisfiable()) {
                 SolutionWorkflow satSolution = new SolutionWorkflow(problem.model(), this);
@@ -360,11 +346,6 @@ public class SATSynthesisEngine implements SynthesisEngine {
                         .getNegatedMappedSolutionArray(runConfig.getAllowToolSeqRepeat()));
                 solver.addClause(negSol);
             }
-            satInput.close();
-        } catch (ParseFormatException e) {
-            log.error("Error while parsing the cnf encoding of the problem by the MiniSAT solver.");
-            log.error(e.getMessage());
-            return solutions;
         } catch (ContradictionException e) {
             if (solutionsFound == 0) {
                 log.warn("Unsatisfiable");
@@ -372,9 +353,6 @@ public class SATSynthesisEngine implements SynthesisEngine {
             }
         } catch (TimeoutException e) {
             log.warn("Timeout. Total solving took longer than the timeout: " + globalTimeoutMs + " ms.");
-        } catch (IOException e) {
-            log.warn("Internal error while parsing the encoding.");
-            return solutions;
         }
 
         if (solutionsFound == 0 || solutionsFound % 500 != 0) {
@@ -433,16 +411,11 @@ public class SATSynthesisEngine implements SynthesisEngine {
     }
 
     /**
-     * Delete all temporary files created.
-     * 
-     * @throws IOException Failed to delete temp files.
+     * Release the resources used by the encoding. The encoding is kept in memory,
+     * so no temporary files are created anymore.
      */
-    public void deleteTempFiles() throws IOException {
-        try {
-            Files.delete(cnfEncoding.toPath());
-            Files.delete(satInputFile.toPath());
-        } catch (IOException ignored) {
-        }
+    public void deleteTempFiles() {
+        clauseBuffer.clear();
     }
 
 }

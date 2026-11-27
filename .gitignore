@@ -86,3 +86,5 @@ nb-configuration.xml
 solutions.txt
 CWL/*
 Figures/*
+bench/
+local/

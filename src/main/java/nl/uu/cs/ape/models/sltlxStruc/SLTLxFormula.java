@@ -1,12 +1,10 @@
 package nl.uu.cs.ape.models.sltlxStruc;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import nl.uu.cs.ape.utils.APEFiles;
+import nl.uu.cs.ape.solver.minisat.CNFClauseBuffer;
 import nl.uu.cs.ape.solver.minisat.SATSynthesisEngine;
 
 /**
@@ -21,20 +19,16 @@ public abstract class SLTLxFormula implements SLTLxElem {
 	}
 
 	/**
-	 * Encode a collection of SLTLx formulas to CNF and append it to the existing
-	 * CNF file. It adds the encoding at the end of the content of the file.
+	 * Encode a collection of SLTLx formulas to CNF and add the clauses to the
+	 * given in-memory clause buffer.
 	 * 
-	 * @param file            existing cnf file
+	 * @param clauseBuffer    buffer that collects the CNF clauses
 	 * @param synthesisEngine synthesis engine used for encoding
 	 * @param formulas        collection of formulas that should be encoded
-	 * @throws IOException Thrown in case of an I/O error.
 	 */
-	public static void appendCNFToFile(File file, SATSynthesisEngine synthesisEngine, Collection<SLTLxFormula> formulas)
-			throws IOException {
-		StringBuilder cnf = new StringBuilder();
-		createCNFEncoding(formulas, 0, synthesisEngine)
-				.forEach(cnf::append);
-		APEFiles.appendToFile(file, cnf.toString());
+	public static void appendCNF(CNFClauseBuffer clauseBuffer, SATSynthesisEngine synthesisEngine,
+			Collection<SLTLxFormula> formulas) {
+		clauseBuffer.addAll(createCNFEncoding(formulas, 0, synthesisEngine));
 	}
 
 	/**

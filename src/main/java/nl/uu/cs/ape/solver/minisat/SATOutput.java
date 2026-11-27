@@ -82,7 +82,7 @@ public class SATOutput extends SolutionInterpreter {
         usedTypeStates = new HashSet<>();
         for (int mappedLiteral : satSolution) {
             if (mappedLiteral >= synthesisInstance.getMappings().getInitialNumOfMappedAtoms()) {
-                SLTLxLiteral currLiteral = new SLTLxLiteral(Integer.toString(mappedLiteral),
+                SLTLxLiteral currLiteral = new SLTLxLiteral(mappedLiteral,
                         synthesisInstance.getMappings());
                 literals.add(currLiteral);
                 if (!currLiteral.isNegated()) {
@@ -102,18 +102,21 @@ public class SATOutput extends SolutionInterpreter {
                         relevantElements.add(currLiteral);
                         relevantTypes.add(currLiteral);
                         usedTypeStates.add(currLiteral.getUsedInStateArgument());
-                    } else if (currLiteral.getPredicate() instanceof State
+                    } else if (currLiteral.getWorkflowElementType() == AtomType.MEM_TYPE_REFERENCE
                             && ((State) (currLiteral.getPredicate())).getAbsoluteStateNumber() != -1) {
                         /*
                          * add all positive literals that describe memory type references that are not
-                         * pointing to null state (NULL state has AbsoluteStateNumber == -1)
+                         * pointing to null state (NULL state has AbsoluteStateNumber == -1). The
+                         * ancestor (R) and identity (IS) relations are not part of a workflow: they
+                         * are not determined by it, so blocking them would return the same workflow
+                         * again with different relation values.
                          */
                         references2MemTypes.add(currLiteral);
                         relevantElements.add(currLiteral);
                     }
                 }
             } else if (mappedLiteral >= 100000) {
-                SLTLxLiteral currLiteral = new SLTLxLiteral(Integer.toString(mappedLiteral),
+                SLTLxLiteral currLiteral = new SLTLxLiteral(mappedLiteral,
                         synthesisInstance.getMappings());
                 literals.add(currLiteral);
             }

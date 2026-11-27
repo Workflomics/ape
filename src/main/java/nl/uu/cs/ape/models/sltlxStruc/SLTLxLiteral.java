@@ -44,6 +44,21 @@ public class SLTLxLiteral implements Comparable<SLTLxLiteral> {
     private SLTLxAtomVar atomVar;
 
     /**
+     * Create a literal from its mapped integer value, as returned by the SAT
+     * solver (negative values denote negated atoms).
+     *
+     * @param mappedLiteral mapped literal
+     * @param atomMapping   mapping of atoms to integers
+     */
+    public SLTLxLiteral(int mappedLiteral, SATAtomMappings atomMapping) {
+        super();
+        this.negated = mappedLiteral < 0;
+        this.mappedAtom = Math.abs(mappedLiteral);
+        this.atom = atomMapping.findOriginal(mappedAtom);
+        this.atomVar = atomMapping.findOriginalVar(mappedAtom);
+    }
+
+    /**
      * Generating an object from a mapped representation of the SLTLxLiteral.
      *
      * @param mappedLiteral Mapped literal.
