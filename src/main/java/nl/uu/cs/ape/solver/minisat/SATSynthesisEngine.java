@@ -210,15 +210,24 @@ public class SATSynthesisEngine implements SynthesisEngine {
         APEUtils.timerRestartAndPrint(currLengthTimer, "Type usage encoding");
 
         /*
-         * Encode data ancestor relation (R) constraints.
+         * The data ancestor relation (R) and the data equivalence/identity relation
+         * (IS) can only be referred to by SLTLx formulas, which quantify over data.
+         * For every workflow there are values of R and IS that satisfy their
+         * constraints, so they never rule out a workflow by themselves, and they are
+         * only encoded when SLTLx formulas are given.
          */
-        SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules.ancestorRelationsDependency(this));
+        if (!domainSetup.getSLTLxConstraints().isEmpty()) {
+            /*
+             * Encode data ancestor relation (R) constraints.
+             */
+            SLTLxFormula.appendCNF(clauseBuffer, this, EnforceModuleRelatedRules.ancestorRelationsDependency(this));
 
-        /*
-         * Encode data equivalence/identity relation (IS) constraints.
-         */
-        SLTLxFormula.appendCNF(clauseBuffer, this,
-                EnforceModuleRelatedRules.identityRelationsDependency(typeAutomaton));
+            /*
+             * Encode data equivalence/identity relation (IS) constraints.
+             */
+            SLTLxFormula.appendCNF(clauseBuffer, this,
+                    EnforceModuleRelatedRules.identityRelationsDependency(typeAutomaton));
+        }
 
         /*
          * Setup encoding of 'true' and 'false' atoms to ensure proper SLTLx
