@@ -218,7 +218,7 @@
         <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
-            <version>0.17.0</version>
+            <version>0.17.1</version>
         </dependency>
 		<!-- JavaScript engine used by graphviz-java to render graphs
              when the native Graphviz 'dot' binary is not installed -->
