@@ -20,13 +20,16 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
 import java.nio.charset.StandardCharsets;
@@ -286,6 +289,12 @@ public class APEFiles {
         return jsonArray != null;
     }
 
+    /** Connect and read timeout used when reading content from a URL. */
+    private static final int URL_TIMEOUT_MS = 10000;
+
+    /** Maximum size of the content read from a URL (50 MB). */
+    public static final long MAX_URL_DOWNLOAD_BYTES = 50L * 1024 * 1024;
+
     /**
      * String is a valid URI.
      *
@@ -302,8 +311,10 @@ public class APEFiles {
     }
 
     /**
-     * Read file content from the given path (local path or a public URL) and return
-     * the content as a File object.
+     * Read file content from the given path (local path or a public http(s) URL)
+     * and return the content as a File object. URLs with other protocols (such as
+     * {@code file:}) are rejected, and the content read from a URL is limited to
+     * {@link #MAX_URL_DOWNLOAD_BYTES}.
      * 
      * @param filePath Local path or a public URL with the content.
      * @return File containing info provided at the path.
@@ -323,12 +334,43 @@ public class APEFiles {
      * @throws IOException Exception in case of a badly formatted URL or file.
      */
     private static File readURLToFile(String fileUrl) throws IOException {
+        URL url = new URL(fileUrl);
+        String protocol = url.getProtocol().toLowerCase(Locale.ROOT);
+        if (!protocol.equals("http") && !protocol.equals("https")) {
+            /*
+             * Other protocols (e.g. file: or jar:) would let a configuration read
+             * arbitrary local files. Local files should be given as plain paths.
+             */
+            throw new IOException("Unsupported URL protocol '" + protocol
+                    + ":'. Only http and https URLs are supported, local files should be given as a path.");
+        }
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(URL_TIMEOUT_MS);
+        connection.setReadTimeout(URL_TIMEOUT_MS);
+        if (connection.getContentLengthLong() > MAX_URL_DOWNLOAD_BYTES) {
+            throw new IOException("The content at '" + fileUrl + "' is larger than the limit of "
+                    + MAX_URL_DOWNLOAD_BYTES + " bytes.");
+        }
+
         File loadedFile = File.createTempFile("ape_temp_", "");
-        FileUtils.copyURLToFile(
-                new URL(fileUrl),
-                loadedFile,
-                10000,
-                10000);
+        loadedFile.deleteOnExit();
+        try (InputStream in = connection.getInputStream();
+                OutputStream out = Files.newOutputStream(loadedFile.toPath())) {
+            byte[] buffer = new byte[8192];
+            long total = 0;
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                total += read;
+                if (total > MAX_URL_DOWNLOAD_BYTES) {
+                    throw new IOException("The content at '" + fileUrl + "' is larger than the limit of "
+                            + MAX_URL_DOWNLOAD_BYTES + " bytes.");
+                }
+                out.write(buffer, 0, read);
+            }
+        } catch (IOException e) {
+            Files.deleteIfExists(loadedFile.toPath());
+            throw e;
+        }
         return loadedFile;
     }
 

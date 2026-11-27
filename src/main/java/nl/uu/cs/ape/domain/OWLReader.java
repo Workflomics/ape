@@ -65,6 +65,34 @@ public class OWLReader {
 	}
 
 	/**
+	 * Document IRI that ontology imports are redirected to. The file does not
+	 * exist, so the import is reported as missing and skipped.
+	 */
+	private static final IRI BLOCKED_IMPORT = IRI.create(new File("/nonexistent/ape-blocked-import.owl"));
+
+	/**
+	 * Create an ontology manager that does not load {@code owl:imports}. By
+	 * default the OWL API fetches every imported ontology from its IRI, which
+	 * lets an ontology file make APE request arbitrary URLs (e.g. internal
+	 * services when APE runs as a web service). APE only uses the classes
+	 * declared in the provided ontology file, so imports are skipped with a
+	 * warning.
+	 *
+	 * @return Ontology manager that ignores imports.
+	 */
+	public static OWLOntologyManager createOntologyManager() {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		manager.getOntologyConfigurator()
+				.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+		manager.setIRIMappers(Collections.singleton(importIRI -> {
+			log.warn("Ontology import '{}' is not loaded. APE only uses the classes defined in the ontology file.",
+					importIRI);
+			return BLOCKED_IMPORT;
+		}));
+		return manager;
+	}
+
+	/**
 	 * Method used to read separately <b>ModulesTaxonomy</b> and
 	 * <b>TypesTaxonomy</b> part of the ontology.
 	 *
@@ -75,7 +103,7 @@ public class OWLReader {
 	 */
 	public boolean readOntology() throws APEDimensionsException, OWLOntologyCreationException {
 
-		final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		final OWLOntologyManager manager = createOntologyManager();
 		if (ontologyFile.exists()) {
 			ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 		} else {
@@ -123,7 +151,7 @@ public class OWLReader {
 			List<String> dataDimensionRoots)
 			throws APEDimensionsException, OWLOntologyCreationException, FileExistsException {
 
-		final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		final OWLOntologyManager manager = createOntologyManager();
 		AllModules allModules = new AllModules(toolTaxonomyRoot);
 		AllTypes allTypes = new AllTypes(dataDimensionRoots);
 		OWLOntology ontology = null;
