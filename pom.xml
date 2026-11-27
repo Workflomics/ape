@@ -59,6 +59,14 @@
 					<compilerArgs>
 						<arg>-Xlint:all</arg>
 					</compilerArgs>
+					<!-- JDK 23+ no longer runs classpath annotation processors implicitly -->
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.48</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -197,7 +205,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.48</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
