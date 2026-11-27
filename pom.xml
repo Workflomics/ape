@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.workflomics</groupId>
 	<artifactId>APE</artifactId>
-	<version>2.6.2</version>
+	<version>2.7.0</version>
 	<packaging>jar</packaging>
 	<name>org.workflomics:APE</name>
 	<description>APE is a command line tool and an API for the automated exploration of possible computational pipelines (workflows) from large collections of computational tools.</description>
@@ -226,7 +226,7 @@
         <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
-            <version>0.17.1</version>
+            <version>0.17.0</version>
         </dependency>
 		<!-- JavaScript engine used by graphviz-java to render graphs
              when the native Graphviz 'dot' binary is not installed -->
